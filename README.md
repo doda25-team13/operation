@@ -19,3 +19,8 @@ To stop the services run:
 ```bash
 sudo docker compose down
 ```
+
+To check the logs run:
+```bash
+docker compose logs -f
+```
