@@ -22,13 +22,17 @@
 
     I have worked on A1 on features 4 & 6. Both features were worked on, and PRs were created by the end of week 1 and during week 2.
 
-- Maria
+- Ayoub
     - https://github.com/doda25-team13/lib-version
     - https://github.com/doda25-team13/app 
     - doda25-team13/lib-version
 
     
     I have worked on the initial commit of the lib-version reporitory.My part was F1 and F2, and I implemented feedback throughout week2.
+
+- Pranav
+    - Due to the nature of task dependency, I have not been able to add a ton of code to the respositories this week. I was supposed to work on F11.
+    - I have primarily worked on understanding and giving code reviews for each open PR for tasks F1-F7    
 
 
 ### Week Q2.3 
