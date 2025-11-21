@@ -5,7 +5,8 @@ This project includes a `docker-compose.yml` file which runs both services:
 
 To run the docker compose file, first create a `.env` file in the same directory as `docker-compose.yml` and set the port environmental variables:
 ```bash
-APP_PORT=8080
+APP_HOST_PORT=8080
+APP_CONTAINER_PORT=8080
 MODEL_SERVICE_PORT=8081
 ```
 Run the following command to start the services:
@@ -13,7 +14,7 @@ Run the following command to start the services:
 cd /path/to/project/
 sudo docker compose up -d
 ```
-Frontend service will be available on port `APP_PORT` (e.g., [localhost:8080/sms/](http://localhost:8080/sms/)), while backend service will be available on port `MODEL_SERVICE_PORT` (e.g., [localhost:8081/](http://localhost:8081/)). \
+Frontend service will be available on port `APP_HOST_PORT` (e.g., [localhost:8080/sms/](http://localhost:8080/sms/)).\
 \
 To stop the services run:
 ```bash
