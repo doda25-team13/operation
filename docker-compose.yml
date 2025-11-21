@@ -20,7 +20,7 @@ services:
     container_name: app
 
     ports:
-      - "${APP_PORT}:8080"
+      - "${APP_HOST_PORT}:${APP_CONTAINER_PORT}"
 
     environment:
       SERVER_PORT: 8080
