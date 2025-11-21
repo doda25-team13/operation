@@ -9,7 +9,7 @@ services:
     container_name: model-service
 
     environment:
-      MODEL_SERVICE_PORT: 8081
+      MODEL_SERVICE_PORT: ${MODEL_SERVICE_PORT}
     
     restart: unless-stopped
 
