@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+
+  model-service:
+
+    image: ghcr.io/doda25-team13/model-service:latest
+
+    container_name: model-service
+
+    environment:
+      MODEL_SERVICE_PORT: ${MODEL_SERVICE_PORT}
+    
+    restart: unless-stopped
+
+  app:
+    
+    image: ghcr.io/doda25-team13/app:latest
+
+    container_name: app
+
+    ports:
+      - "${APP_HOST_PORT}:${APP_CONTAINER_PORT}"
+
+    environment:
+      SERVER_PORT: ${APP_CONTAINER_PORT}
+      MODEL_SERVICE_URL: "http://model-service:${MODEL_SERVICE_PORT}"
+    
+    depends_on: 
+      - model-service
+
+    restart: unless-stopped
+
