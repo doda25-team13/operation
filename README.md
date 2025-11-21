@@ -22,5 +22,5 @@ sudo docker compose down
 
 To check the logs run:
 ```bash
-docker compose logs -f
+sudo docker compose logs -f
 ```
