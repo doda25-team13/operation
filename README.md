@@ -13,7 +13,7 @@ Run the following command to start the services:
 cd /path/to/project/
 sudo docker compose up -d
 ```
-Frontend service will be available on port `APP_PORT` (e.g., [localhost:8080/](http://localhost:8080/)), while backend service will be available on port `MODEL_SERVICE_PORT` (e.g., [localhost:8081/](http://localhost:8081/)). \
+Frontend service will be available on port `APP_PORT` (e.g., [localhost:8080/sms/](http://localhost:8080/sms/)), while backend service will be available on port `MODEL_SERVICE_PORT` (e.g., [localhost:8081/](http://localhost:8081/)). \
 \
 To stop the services run:
 ```bash
