@@ -10,6 +10,9 @@ services:
 
     environment:
       MODEL_SERVICE_PORT: ${MODEL_SERVICE_PORT}
+
+    volumes:
+      - ./model-data:/models
     
     restart: unless-stopped
 
@@ -24,7 +27,7 @@ services:
 
     environment:
       SERVER_PORT: ${APP_CONTAINER_PORT}
-      MODEL_SERVICE_URL: "http://model-service:${MODEL_SERVICE_PORT}"
+      MODEL_HOST: "http://model-service:${MODEL_SERVICE_PORT}"
     
     depends_on: 
       - model-service
