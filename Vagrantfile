@@ -14,12 +14,64 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
-  config.vm.network "private_network", ip: "192.168.56.10"
+  # Network adapter to communicate
+ # config.vm.network "private_network", ip: "192.168.56.10"
   
-  config.vm.provision :ansible do |a|
-    a.compatibility_mode = "2.0"
-    a.playbook = "provisioning.yml"
+  NUM_WORKERS = 2   
+ 
+  # define a controller  
+  config.vm.define "ctrl" do |ctrl|
+    ctrl.vm.hostname = "ctrl"
+    # Step 2: Fixed IP for controller
+    
+    ctrl.vm.network "private_network", ip: "192.168.56.100" 
+    ctrl.vm.provider "virtualbox" do |vb|
+      vb.name = "ctrl"
+      vb.memory = 4096 # 4GB+
+      vb.cpus = 1      # 1 core
+    end
+
+    # Step 3: Provision with Ansible
+    # Run General Playbook
+    ctrl.vm.provision "ansible" do |ansible|
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "ansible/general.yaml"
+    end
+
+    # Run Controller Specific Playbook
+    ctrl.vm.provision "ansible" do |ansible|
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "ansible/ctrl.yaml"
+    end
   end
+
+
+  (1..NUM_WORKERS).each do |i|
+    config.vm.define "node-#{i}" do |node|
+      node.vm.hostname = "node-#{i}"
+      # Step 2: Fixed IPs starting at 101
+      node.vm.network "private_network", ip: "192.168.56.#{100 + i}"
+
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "node-#{i}"
+        vb.memory = 6144 # 6GB+
+        vb.cpus = 2      # 2 cores
+      end
+
+      # Step 3: Provision with Ansible
+      # Run General Playbook
+      node.vm.provision "ansible" do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.playbook = "ansible/general.yaml"
+      end
+      # Run Node Specific Playbook
+      node.vm.provision "ansible" do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.playbook = "ansible/node.yaml"
+      end
+    end
+  end  
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -62,12 +114,8 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  config.vm.provider "virtualbox" do |v|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-    v.memory = 4096
-    v.cpus = 2
-  end 
+  
+ 
   #   # Customize the amount of memory on the VM:
   #   vb.memory = "1024"
   # end

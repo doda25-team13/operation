@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Worker Dependencies (Placeholder)
+      debug:
+        msg: "This is where Kubernetes WOrker setup happens."
