@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Controller Dependencies (Placeholder)
+      debug:
+        msg: "This is where Kubernetes Controller setup happens. add our logic here for step 13 and onward"

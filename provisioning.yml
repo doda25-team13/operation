@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt: name=nginx state=present update_cache=true
+    - name: (Auto-) Start Nginx
+      service: name=nginx state=started enabled=true
+    - name: Copy image to server
+      copy:
+        src: pic.jpg
+        dest: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: "0644" # make sure these are "normal" quotes when copying
+    - name: Replace the Homepage Title
+      replace:
+        path: /var/www/html/index.nginx-debian.html
+        regexp: "<h1>Welcome to nginx!</h1>" # make sure these are "normal" quotes when copying
+        replace: "<h1>Welcome to the REMLA course!</h1><img src=\"pic.jpg\" />"
+ 
