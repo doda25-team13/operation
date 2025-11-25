@@ -109,4 +109,111 @@
         update_cache: yes
       become: true
     
+    # Step 11
+    - name: Dump default containerd configuration
+      ansible.builtin.command: containerd config default
+      args: 
+        creates: /etc/containerd/config.toml
+      register: containerd_default_config
+      become: true
+    
+    - name: Ensure /etc/containerd directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      become: true
+    
+    - name: Write to containerd
+      ansible.builtin.copy:
+        content: "{{ containerd_default_config.stdout }}"
+        dest: /etc/containerd/config.toml
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+    
+    ################DEBUG##########################
+    - name: Show current containerd config
+      command: cat /etc/containerd/config.toml
+      register: containerd_config_before
+      become: true
+
+    - name: Print containerd config before changes
+      debug:
+        msg: "{{ containerd_config_before.stdout }}"
+    ################DEBUG##########################
+
+    # - name: Set containerd sandbox_image for Kubernetes
+    #   lineinfile:
+    #     path: /etc/containerd/config.toml
+    #     regexp: '^(\s*)sandbox_image\s*=.*'
+    #     line: '    sandbox_image = "registry.k8s.io/pause:3.10"'
+    #   become: true
+
+    # - name: Enable systemd_cgroup
+    #   lineinfile:
+    #     path: /etc/containerd/config.toml
+    #     regexp: '^(\s*)SystemdCgroup\s*=.*'
+    #     line: '      SystemdCgroup = true'
+    #   become: true
+
+    # - name: Disable AppArmor for containerd
+    #   lineinfile:
+    #     path: /etc/containerd/config.toml
+    #     regexp: '^(\s*)disable_apparmor\s*=.*'
+    #     line: '    disable_apparmor = true'
+    #   become: true
+
+    - name: Disable AppArmor in containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^\s*disable_apparmor\s*='
+        line: '      disable_apparmor = true'
+        insertafter: '^\[plugins."io.containerd.grpc.v1.cri"\]'
+        state: present
+
+    - name: Update sandbox image
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^\s*sandbox_image\s*='
+        line: '      sandbox_image = "registry.k8s.io/pause:3.10"'
+        insertafter: '^\[plugins."io.containerd.grpc.v1.cri"\]'
+        state: present
+
+    - name: Enable systemd cgroup for runc
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^\s*SystemdCgroup\s*='
+        line: '        SystemdCgroup = true'
+        insertafter: '^\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]'
+        state: present
+
+    ################DEBUG##########################
+    - name: Show updated containerd config
+      command: cat /etc/containerd/config.toml
+      register: containerd_config_after
+      become: true
+
+    - name: Print containerd config after changes
+      debug:
+        msg: "{{ containerd_config_after.stdout }}"
+    ################DEBUG##########################
+
+    - name: Restart containerd 
+      ansible.builtin.service:
+        name: containerd
+        state: restarted
+        enabled: yes
+      become: true
+
+    # Step 12
+    - name: Start kubelet
+      ansible.builtin.service:
+        name: kubelet
+        state: started
+        enabled: yes
+      become: true
     
