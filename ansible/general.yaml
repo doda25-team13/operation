@@ -14,3 +14,61 @@
       # Loops over all .pub files in the public_keys/ directory relative to the playbook
      # with_fileglob:
       #  - "../public_keys/*.pub"
+
+    # Step 5
+    - name: Disable swap for the running system
+      ansible.builtin.shell: swapoff -a
+      become: true
+
+    - name: Prevent re-mount on the next boot
+      ansible.builtin.lineinfile: 
+        path: /etc/fstab
+        regexp: '^\s*.*swap.*$'
+        state: absent
+      become: true    # is this needed here?
+
+    # Step 6
+    - name: Load br_netfilter module
+      ansible.builtin.modprobe: 
+        name: br_netfilter
+        state: present
+      become: yes
+    
+    - name: Ensure automated loading for overlay and br_netfilter
+      ansible.builtin.copy: 
+        dest: /etc/modules-load.d/k8s.conf
+        content: | 
+          overlay
+          br_netfilter
+      become: yes
+    
+    #Step 7
+    - name: Enable IPv4 forwarding
+      ansible.builtin.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+      become: yes
+    
+    - name: Enable forwarding of bridge connections
+      ansible.builtin.sysctl:
+        name: "{{ item.name }}"
+        value: '1'
+        state: present
+        reload: yes
+      loop:
+        - {name: net.bridge.bridge-nf-call-iptables }
+        - {name: net.bridge.bridge-nf-call-ip6tables }
+
+    # Step 8
+    - name: Manage /etc/hosts
+      ansible.builtin.template:
+        src: templates/hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+
