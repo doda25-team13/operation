@@ -18,21 +18,18 @@
     # Step 5
     - name: Disable swap for the running system
       ansible.builtin.command: swapoff -a
-      become: true
 
     - name: Prevent re-mount on the next boot
       ansible.builtin.lineinfile: 
         path: /etc/fstab
         regexp: '^\s*.*swap.*$'
         state: absent
-      become: true    # is this needed here?
 
     # Step 6
     - name: Load br_netfilter module
       ansible.builtin.modprobe: 
         name: br_netfilter
         state: present
-      become: yes
     
     - name: Ensure automated loading for overlay and br_netfilter
       ansible.builtin.copy: 
@@ -40,7 +37,6 @@
         content: | 
           overlay
           br_netfilter
-      become: yes
     
     #Step 7
     - name: Enable IPv4 forwarding
@@ -49,7 +45,6 @@
         value: '1'
         state: present
         reload: yes
-      become: yes
     
     - name: Enable forwarding of bridge connections
       ansible.builtin.sysctl:
@@ -69,21 +64,18 @@
         owner: root
         group: root
         mode: '0644'
-      become: true
 
     #Step 9
     - name: Add Kubernetes signing key
       ansible.builtin.apt_key:
         url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
         state: present
-      become: true
     
     - name: Add Kubernetes repository as package source
       ansible.builtin.apt_repository:
         repo: deb https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /
         state: present
         filename: kubernetes
-      become: true 
 
     - name: Update apt cache
       ansible.builtin.apt:
@@ -97,7 +89,6 @@
           - runc
         state: present
         update_cache: yes
-      become: true
     
     - name: Install kubeadm, kubelet, kubectl
       ansible.builtin.apt:
@@ -107,7 +98,6 @@
           - kubectl
         state: present
         update_cache: yes
-      become: true
     
     # Step 11
     - name: Create default containerd config
@@ -130,7 +120,6 @@
         line: '\1 = "registry.k8s.io/pause:3.10"'
         backrefs: yes
         state: present
-      become: true
 
     - name: Disable AppArmor in containerd
       lineinfile:
@@ -139,14 +128,12 @@
         line: '\1 = true'
         backrefs: yes
         state: present
-      become: true
 
     - name: Restart containerd 
       ansible.builtin.service:
         name: containerd
         state: restarted
         enabled: yes
-      become: true
 
     # Step 12
     - name: Start kubelet
@@ -154,5 +141,4 @@
         name: kubelet
         state: started
         enabled: yes
-      become: true
     
