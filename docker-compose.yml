@@ -10,7 +10,13 @@ services:
 
     environment:
       MODEL_SERVICE_PORT: ${MODEL_SERVICE_PORT}
+      MODEL_DIR: /models
+      MODEL_REPO: doda25-team13/model-service
+      MODEL_VERSION: latest
     
+    volumes:
+          - ./models-cache:/models
+
     restart: unless-stopped
 
   app:

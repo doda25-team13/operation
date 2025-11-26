@@ -12,7 +12,7 @@ MODEL_SERVICE_PORT=8081
 Run the following command to start the services:
 ```bash
 cd /path/to/project/
-sudo docker compose up -d
+sudo docker compose up --pull always
 ```
 Frontend service will be available on port `APP_HOST_PORT` (e.g., [localhost:8080/sms/](http://localhost:8080/sms/)).\
 \
