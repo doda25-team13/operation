@@ -50,7 +50,7 @@ pw:       vagrant
 
 If your public key is in the public keys folder, this command should omit the need for this, for an example for Node 1 
 ```bash 
-ssh -i ~/.ssh/vagrant_key vagrant@192.168.56.101
+ssh -i ~/.ssh/id_ed25519 vagrant@192.168.56.101
 ```
 
 
