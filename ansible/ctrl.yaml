@@ -1,7 +1,101 @@
 ---
-- hosts: all
+- hosts: ctrl
   become: yes
   tasks:
     - name: Install Controller Dependencies (Placeholder)
       debug:
         msg: "This is where Kubernetes Controller setup happens. add our logic here for step 13 and onward"
+
+    # Step 13: Initialize Kubernetes Cluster
+    - name: Check if Kubernetes cluster is already initialized
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: admin_conf_check
+
+    - name: Initialize Kubernetes cluster with kubeadm
+      ansible.builtin.command: >
+        kubeadm init
+        --apiserver-advertise-address=192.168.56.100
+        --node-name=ctrl
+        --pod-network-cidr=10.244.0.0/16
+        --ignore-preflight-errors=NumCPU
+      become: true
+      when: not admin_conf_check.stat.exists
+
+    # Step 14: Setup kubectl
+    - name: Create .kube directory for vagrant user
+      ansible.builtin.file:
+        path: /home/vagrant/.kube
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: '0755'
+
+    - name: Copy admin.conf to vagrant user's kube config
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
+
+    - name: Fetch admin.conf to host machine
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: ./kubeconfig
+        flat: yes
+
+    # Step 15: Create Pod network
+    - name: Download Flannel manifest
+      ansible.builtin.get_url:
+        url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
+        dest: /home/vagrant/kube-flannel.yml
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+
+    - name: Patch Flannel to use eth1 interface
+      ansible.builtin.replace:
+        path: /home/vagrant/kube-flannel.yml
+        regexp: '^(\s*)args:\s*$'
+        replace: '\1args:\n\1  - --iface=eth1'
+
+    - name: Apply Flannel manifest
+      ansible.builtin.command: kubectl apply -f /home/vagrant/kube-flannel.yml
+      become: false
+
+      # Become false ensures we run as the 'vagrant' user, utilizing the config we set up in Step 14
+
+    # Step 16: Install Helm
+
+    - name: Download Helm GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey \
+        | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+      args:
+        creates: /usr/share/keyrings/helm.gpg
+
+    - name: Add Helm repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
+        state: present
+        filename: helm-stable-debian
+
+    - name: Install Helm
+      ansible.builtin.apt:
+        name: helm
+        state: present
+        update_cache: yes
+
+    # Step 17: Install Helm package (helm-diff) - Idempotent
+    - name: Check if helm-diff plugin is installed
+      ansible.builtin.command: helm plugin list
+      become: false
+      register: helm_plugin_list
+      changed_when: false
+
+    - name: Install helm-diff plugin
+      ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
+      become: false
+      when: "'diff' not in helm_plugin_list.stdout"
