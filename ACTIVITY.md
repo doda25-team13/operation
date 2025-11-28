@@ -47,3 +47,9 @@
     - (https://github.com/doda25-team13/operation/pull/17)
     
   I have worked on steps 5-12 in A2, and worked on fixing last week's bugs.
+
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/16
+  - https://github.com/doda25-team13/model-service/pull/8
+ 
+  I have worked on debugging the code for A1 and I believe that everything is now implemented except F11. In addition I went through both PRs regarding steps 5-12 and 13-17 for A2, and added some comments where the tasks were crashing for me, and specified how I fixed those issues locally. I have also started on steps 18 & 19 for A2, but it does not work yet 😢.
