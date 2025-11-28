@@ -25,3 +25,34 @@ To check the logs run:
 ```bash
 sudo docker compose logs -f
 ```
+# Running the Application with Vagrant (A2) 
+Requires virtual environment for python , activate it by : 
+```bash
+ source .venv/bin/activate
+```
+Check if vagrant, Ansible and VirtualBox are installed by checking their version 
+
+If kvm is enabled, you might have to disable it, depending on which CPU you have: 
+```bash
+sudo modprobe -r kvm_amd 
+sudo modprobe -r kvm_intel
+```
+Start the vagrant (This will look at the configuration from the Vagrant file in the folder) 
+```bash
+vagrant up
+```
+
+You now should be able to ssh into one the (ctrl / worker) nodes, and the content of a node should be visible on your local browser on their IP adress + port (See tutorial W3 or follow up implementation) 
+
+In the case that ssh requires credentials:
+username: vagrant
+pw:       vagrant 
+
+If your public key is in the public keys folder, this command should omit the need for this, for an example for Node 1 
+```bash 
+ssh -i ~/.ssh/id_ed25519 vagrant@192.168.56.101
+```
+
+
+
+
