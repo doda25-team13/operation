@@ -58,7 +58,7 @@
 
     # Step 8
     - name: Manage /etc/hosts
-      ansible.builtin.template:
+      ansible.builtin.copy:
         src: templates/hosts.j2
         dest: /etc/hosts
         owner: root
@@ -85,21 +85,29 @@
     - name: Install containerd and runc
       ansible.builtin.apt:
         name: 
-          - containerd  #wont allow me to specify a version, not sure why
-          - runc
+          - containerd=1.7.24*
+          - runc=1.1.12*
         state: present
         update_cache: yes
     
     - name: Install kubeadm, kubelet, kubectl
       ansible.builtin.apt:
         name:
-          - kubeadm #same issue with the version
-          - kubelet
-          - kubectl
+          - kubeadm=1.32.4-* 
+          - kubelet=1.32.4-*
+          - kubectl=1.32.4-*
         state: present
         update_cache: yes
     
     # Step 11
+    - name: Ensure /etc/containerd directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
     - name: Create default containerd config
       shell: containerd config default > /etc/containerd/config.toml
       args:
