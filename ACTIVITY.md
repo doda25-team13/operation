@@ -42,3 +42,8 @@
     - (https://github.com/doda25-team13/operation/pull/15)
  
   I have worked on the initial setup of the A2, includingg step 1- step 4. 
+
+- Maria
+    - (https://github.com/doda25-team13/operation/pull/17)
+    
+  I have worked on steps 5-12 in A2, and worked on fixing last week's bugs.
