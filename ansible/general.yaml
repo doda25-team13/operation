@@ -5,15 +5,15 @@
       # Each task has a different name , for an example the tutorial of W3
       # used tasks to install nginx, we should instead try run the application
 
-    #  Register SSH Keys by looping over files
-#    - name: Add Team Member Public Keys
- #     authorized_key:
-  #      user: vagrant
-   #     state: present
-    #    key: "{{ lookup('file', item) }}"
-      # Loops over all .pub files in the public_keys/ directory relative to the playbook
-     # with_fileglob:
-      #  - "../public_keys/*.pub"
+    # Register SSH Keys by looping over files
+    - name: Add Team Member Public Keys
+      authorized_key:
+        user: vagrant
+        state: present
+        key: "{{ lookup('file', item) }}"
+     #  Loops over all .pub files in the public_keys/ directory relative to the playbook
+      with_fileglob:
+        - "../public_keys/*.pub"
 
     # Step 5
     - name: Disable swap for the running system
@@ -149,4 +149,3 @@
         name: kubelet
         state: started
         enabled: yes
-    
