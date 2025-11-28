@@ -5,7 +5,7 @@
       # Each task has a different name , for an example the tutorial of W3
       # used tasks to install nginx, we should instead try run the application
 
-     # Register SSH Keys by looping over files
+    # Register SSH Keys by looping over files
     - name: Add Team Member Public Keys
       authorized_key:
         user: vagrant
@@ -14,3 +14,138 @@
      #  Loops over all .pub files in the public_keys/ directory relative to the playbook
       with_fileglob:
         - "../public_keys/*.pub"
+
+    # Step 5
+    - name: Disable swap for the running system
+      ansible.builtin.command: swapoff -a
+
+    - name: Prevent re-mount on the next boot
+      ansible.builtin.lineinfile: 
+        path: /etc/fstab
+        regexp: '^\s*.*swap.*$'
+        state: absent
+
+    # Step 6
+    - name: Load br_netfilter module
+      ansible.builtin.modprobe: 
+        name: br_netfilter
+        state: present
+    
+    - name: Ensure automated loading for overlay and br_netfilter
+      ansible.builtin.copy: 
+        dest: /etc/modules-load.d/k8s.conf
+        content: | 
+          overlay
+          br_netfilter
+    
+    #Step 7
+    - name: Enable IPv4 forwarding
+      ansible.builtin.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+    
+    - name: Enable forwarding of bridge connections
+      ansible.builtin.sysctl:
+        name: "{{ item.name }}"
+        value: '1'
+        state: present
+        reload: yes
+      loop:
+        - {name: net.bridge.bridge-nf-call-iptables }
+        - {name: net.bridge.bridge-nf-call-ip6tables }
+
+    # Step 8
+    - name: Manage /etc/hosts
+      ansible.builtin.copy:
+        src: templates/hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+
+    #Step 9
+    - name: Add Kubernetes signing key
+      ansible.builtin.apt_key:
+        url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
+        state: present
+    
+    - name: Add Kubernetes repository as package source
+      ansible.builtin.apt_repository:
+        repo: deb https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /
+        state: present
+        filename: kubernetes
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    #Step 10
+    - name: Install containerd and runc
+      ansible.builtin.apt:
+        name: 
+          - containerd=1.7.24*
+          - runc=1.1.12*
+        state: present
+        update_cache: yes
+    
+    - name: Install kubeadm, kubelet, kubectl
+      ansible.builtin.apt:
+        name:
+          - kubeadm=1.32.4-* 
+          - kubelet=1.32.4-*
+          - kubectl=1.32.4-*
+        state: present
+        update_cache: yes
+    
+    # Step 11
+    - name: Ensure /etc/containerd directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create default containerd config
+      shell: containerd config default > /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml #makes it idempotent, no need to rewrite file with default every time
+
+    - name: Enable SystemdCgroup in containerd
+      lineinfile:
+        dest: /etc/containerd/config.toml
+        regexp: '(\s+SystemdCgroup) = false'
+        line: '\1 = true'
+        backrefs: yes
+        state: present
+
+    - name: Update sandbox_image in containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*sandbox_image)\s*=.*'
+        line: '\1 = "registry.k8s.io/pause:3.10"'
+        backrefs: yes
+        state: present
+
+    - name: Disable AppArmor in containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '(\s+disable_apparmor) = false'
+        line: '\1 = true'
+        backrefs: yes
+        state: present
+
+    - name: Restart containerd 
+      ansible.builtin.service:
+        name: containerd
+        state: restarted
+        enabled: yes
+
+    # Step 12
+    - name: Start kubelet
+      ansible.builtin.service:
+        name: kubelet
+        state: started
+        enabled: yes

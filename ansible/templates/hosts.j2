@@ -1,0 +1,11 @@
+127.0.0.1   localhost
+
+# Controller
+{% for host in groups['controller'] %}
+{{ hostvars[host]['ansible_host'] }}    {{ host }}
+{%endfor%}
+
+# Workers
+{% for host in groups['workers'] %}
+{{ hostvars[host]['ansible_host'] }}    {{ host }}
+{%endfor%}
