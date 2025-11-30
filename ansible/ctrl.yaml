@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: ctrl
   become: yes
   tasks:
     - name: Install Controller Dependencies (Placeholder)
@@ -18,6 +18,7 @@
         --apiserver-advertise-address=192.168.56.100
         --node-name=ctrl
         --pod-network-cidr=10.244.0.0/16
+        --ignore-preflight-errors=NumCPU
       become: true
       when: not admin_conf_check.stat.exists
 
@@ -54,11 +55,9 @@
         group: vagrant
         mode: '0644'
 
-    - name: Patch Flannel to use eth1 interface
-      ansible.builtin.replace:
-        path: /home/vagrant/kube-flannel.yml
-        regexp: '(\s*)args:'
-        replace: '\1args:\n\1- --iface=eth1'
+    - name: Patch Flannel to use eth1 interface (Sed)
+      ansible.builtin.shell: |
+        sed -i 's/args:/args:\n        - --iface=eth1/' /home/vagrant/kube-flannel.yml
 
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /home/vagrant/kube-flannel.yml
@@ -66,17 +65,16 @@
       # Become false ensures we run as the 'vagrant' user, utilizing the config we set up in Step 14
 
     # Step 16: Install Helm
-    - name: Download Helm signing key
-      ansible.builtin.get_url:
-        url: https://baltocdn.com/helm/signing.asc
-        dest: /etc/apt/keyrings/helm.asc
-        mode: '0644'
+    - name: Download Helm GPG key
+      ansible.builtin.shell: curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+      args:
+        creates: /usr/share/keyrings/helm.gpg
 
     - name: Add Helm repository
       ansible.builtin.apt_repository:
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/helm.asc] https://baltocdn.com/helm/stable/debian/ all main"
-        filename: helm-stable-debian
+        repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
         state: present
+        filename: helm-stable-debian
 
     - name: Update apt cache and install Helm
       ansible.builtin.apt:
