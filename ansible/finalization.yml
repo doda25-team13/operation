@@ -26,7 +26,7 @@
     - name: Apply metallb manifest
       kubernetes.core.k8s:
         state: present
-        src: /tmp/metallb-native-0.14.9.yaml
+        src: /tmp/metallb-native.yaml
         kubeconfig: "{{ kubeconfig_path }}"
 
     - name: Wait for MetalLB controller to be ready
