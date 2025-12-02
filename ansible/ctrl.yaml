@@ -55,24 +55,18 @@
         group: vagrant
         mode: '0644'
 
-    - name: Patch Flannel to use eth1 interface
-      ansible.builtin.replace:
-        path: /home/vagrant/kube-flannel.yml
-        regexp: '^(\s*)args:\s*$'
-        replace: '\1args:\n\1  - --iface=eth1'
+    - name: Patch Flannel to use eth1 interface (Sed)
+      ansible.builtin.shell: |
+        sed -i 's/args:/args:\n        - --iface=eth1/' /home/vagrant/kube-flannel.yml
 
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /home/vagrant/kube-flannel.yml
       become: false
-
       # Become false ensures we run as the 'vagrant' user, utilizing the config we set up in Step 14
 
     # Step 16: Install Helm
-
     - name: Download Helm GPG key
-      ansible.builtin.shell: |
-        curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey \
-        | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+      ansible.builtin.shell: curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
       args:
         creates: /usr/share/keyrings/helm.gpg
 
@@ -82,7 +76,7 @@
         state: present
         filename: helm-stable-debian
 
-    - name: Install Helm
+    - name: Update apt cache and install Helm
       ansible.builtin.apt:
         name: helm
         state: present
@@ -99,21 +93,3 @@
       ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
       become: false
       when: "'diff' not in helm_plugin_list.stdout"
-
-    - name: Ensure python3 and pip exist
-      apt:
-        name:
-          - python3
-          - python3-pip
-        state: present
-        update_cache: yes
-      become: yes
-
-    - name: Install Kubernetes Python client (for k8s Ansible modules)
-      pip:
-        name:
-          - kubernetes
-          - requests
-          - pyyaml
-        extra_args: --break-system-packages
-      become: yes

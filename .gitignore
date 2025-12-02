@@ -3,6 +3,9 @@
 
 # Log file
 *.log
+.idea
+.vagrant
+kubeconfig
 
 # BlueJ files
 *.ctxt
