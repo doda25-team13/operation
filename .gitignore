@@ -29,3 +29,4 @@ replay_pid*
 models-cache/
 .venv/
 .vagrant/
+kubeconfig
