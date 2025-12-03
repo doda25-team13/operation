@@ -57,7 +57,7 @@
 
     - name: Patch Flannel to use eth1 interface (Sed)
       ansible.builtin.shell: |
-        sed -i 's/args:/args:\n        - --iface=eth1/' /home/vagrant/kube-flannel.yml
+        sed -i '/- --kube-subnet-mgr/a\        - --iface=eth1' /home/vagrant/kube-flannel.yml
 
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /home/vagrant/kube-flannel.yml

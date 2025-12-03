@@ -6,15 +6,6 @@
     kubeconfig_path: /home/vagrant/.kube/config
 
   tasks: 
-
-    # step 20
-    - name: Create metallb-system namespace
-      kubernetes.core.k8s:
-        api_version: v1
-        kind: Namespace
-        name: metallb-system
-        state: present
-        kubeconfig: "{{ kubeconfig_path }}"
     
     - name: Copy MetalLB manifest to VM
       copy:
@@ -28,32 +19,6 @@
         state: present
         src: /tmp/metallb-native.yaml
         kubeconfig: "{{ kubeconfig_path }}"
-
-    # - name: Wait for MetalLB controller to be ready
-    #   become_user: vagrant
-    #   command: >
-    #     kubectl wait -n metallb-system
-    #     -l app=metallb,component=controller
-    #     --for=condition=ready pod
-    #     --timeout=120s
-    #   environment:
-    #     KUBECONFIG: /home/vagrant/.kube/config
-    #   retries: 3
-    #   delay: 10
-    #   register: metallb_wait
-    #   until: metallb_wait.rc == 0
-    #   tags:
-    #     - metallb
-
-    # - name: Wait for all MetalLB pods to be ready
-    #   shell: |
-    #     kubectl wait -n metallb-system --for=condition=ready pod --all --timeout=180s --kubeconfig={{ kubeconfig_path }}
-    #   register: metallb_wait
-    #   retries: 5
-    #   delay: 10
-    #   until: metallb_wait.rc == 0
-    #   changed_when: false
-
 
     - name: Move IPAddressPool to VM
       copy:
