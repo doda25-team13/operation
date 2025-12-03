@@ -55,4 +55,22 @@ ssh -i ~/.ssh/id_ed25519 vagrant@192.168.56.101
 
 
 
+# Running in Kubernetes (A3)
 
+## Intial minikube setup
+```bash
+minikube start --driver=docker # can be replaced with --driver=virtualbox if issues arise
+# Make sure Ingress controller is enabled
+minikube addons enable ingress
+```
+
+```bash
+# Apply all manifests
+kubectl apply -f k8s/
+
+# Check pods
+kubectl get pods
+
+# Access app via Ingress (requires ingress controller)
+minikube tunnel  # if using minikube
+```
