@@ -74,3 +74,16 @@ kubectl get pods
 # Access app via Ingress (requires ingress controller)
 minikube tunnel  # if using minikube
 ```
+
+## Accessing the app
+
+(One time) add ip to `/etc/hosts`
+
+```bash
+minikube ip
+
+#take that ip and add it to the /etc/hosts file
+echo "FOUND_IP sms.local" | sudo tee -a /etc/hosts
+```
+
+Go to http://sms.local

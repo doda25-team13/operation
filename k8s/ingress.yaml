@@ -5,13 +5,13 @@ metadata:
 spec:
   ingressClassName: nginx
   rules: 
-    - host: sms.local # need to add to /etc/hosts later?
+    - host: sms.local # need to add to /etc/hosts later?      # replace (see secret.yaml)
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: app-service
+                name: app-service                             # replace
                 port:
-                  number: 80
+                  number: 80                                  # replace
