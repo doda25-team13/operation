@@ -26,3 +26,4 @@ secret:
   name: app-secret
   smtpUser: "placeholder-user"
   smtpPass: "placeholder-password"
+
