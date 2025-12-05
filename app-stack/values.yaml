@@ -1,0 +1,20 @@
+app:
+  name: app
+  image:
+    repository: ghcr.io/doda25-team13/app
+    tag: latest
+  port: 8080
+  service:
+    port: 80
+    type: ClusterIP
+  ingress:
+    className: nginx
+    hosts:
+      stable: app.stable.example.com
+
+model:
+  name: model-service
+  image:
+    repository: ghcr.io/doda25-team13/model-service
+    tag: latest
+  port: 8081
