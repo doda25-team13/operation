@@ -43,6 +43,16 @@ Vagrant.configure("2") do |config|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "ansible/ctrl.yaml"
     end
+
+    # Run finalization playbook
+    ctrl.vm.provision "ansible" do |ansible|
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "ansible/finalization.yml"
+      ansible.extra_vars = {
+        kubeconfig_path: "/home/vagrant/.kube/config"
+      }
+      ansible.become = true
+    end
   end
 
 

@@ -1,0 +1,83 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    kubeconfig_path: /home/vagrant/.kube/config
+
+  tasks: 
+    
+    # step 20
+    - name: Copy MetalLB manifest to VM
+      copy:
+        src: "{{ playbook_dir }}/metallb/metallb-native.yaml"
+        dest: /tmp/metallb-native.yaml
+        mode: '0644'
+    
+    
+    - name: Apply metallb manifest
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/metallb-native.yaml
+        kubeconfig: "{{ kubeconfig_path }}"
+
+    - name: Move IPAddressPool to VM
+      copy:
+        src: "{{ playbook_dir }}/metallb/ip-pool.yaml"
+        dest: /tmp/ip-pool.yaml
+        mode: '0644'
+    
+    - name: Create metallb IPAddressPool
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/ip-pool.yaml
+        kubeconfig: "{{ kubeconfig_path }}"
+
+    - name: Move L2Advertisement to VM
+      copy:
+        src: "{{ playbook_dir }}/metallb/l2-advertisement.yaml"
+        dest: /tmp/l2-advertisement.yaml
+        mode: '0644'
+    
+    - name: Create metallb L2Advertisement
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/l2-advertisement.yaml
+        kubeconfig: "{{ kubeconfig_path }}"
+    
+    - name: Wait for MetalLB provisioning
+      shell: |
+        kubectl wait -n metallb-system -l app=metallb,component=controller --for=condition=ready pod --timeout=60s --kubeconfig={{ kubeconfig_path }}
+      register: metallb_wait
+      changed_when: false
+    
+    # step 21
+    - name: Add ingress-nginx helm repo
+      kubernetes.core.helm_repository:
+        name: ingress-nginx
+        repo_url: https://kubernetes.github.io/ingress-nginx
+    
+    - name: Copy values.yaml  to VM
+      copy:
+        src: "{{ playbook_dir }}/ingress-nginx/values.yaml"
+        dest: /tmp/values.yaml
+        mode: '0644'
+    
+    - name: Install ingress-nginx chart using helm
+      kubernetes.core.helm:
+        name: ingress-nginx
+        chart_ref: ingress-nginx/ingress-nginx
+        release_namespace: ingress-nginx
+        create_namespace: true
+        values_files:
+          - /tmp/values.yaml
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+    
+    - name: Wait for ingress controller pod
+      shell: |
+        kubectl wait -n ingress-nginx --for=condition=ready pod -l app.kubernetes.io/component=controller --timeout=90s --kubeconfig={{ kubeconfig_path }}
+      changed_when: false
+
+
+    

@@ -32,7 +32,14 @@
 
 - Pranav
     - Due to the nature of task dependency, I have not been able to add a ton of code to the respositories this week. I was supposed to work on F11.
-    - I have primarily worked on understanding and giving code reviews for each open PR for tasks F1-F7    
+    - I have primarily worked on understanding and giving code reviews for each open PR for tasks F1-F7    4
+
+- Vasil
+    - https://github.com/doda25-team13/operation/pull/12
+    - https://github.com/doda25-team13/model-service/pull/6
+    - https://github.com/doda25-team13/app/pull/5
+
+    I have worked on F7 and F8
 
 
 ### Week Q2.3 
@@ -56,4 +63,18 @@
 
 - Pranav
     - https://github.com/doda25-team13/operation/pull/18
-      Worked on steps 13-17, still some issues that need to be sorted out to get it running 
+      Worked on steps 13-17, still some issues that need to be sorted out to get it running
+
+- Vasil
+    - worked on steps 20,21 but they were not finished in W3
+      
+### Week Q2.4
+
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/24
+ 
+  Early in the week I have finished steps 18 & 19 of A2. Then I have checked and solved an issue with step 15 of A2. Afterwards, I made the docker compose file we had made in A1 into Kubernetes for A3.
+
+- Pranav
+    - https://github.com/doda25-team13/app/pull/6
+  Worked on steps exposing metrics on the app service, Also improved the PR from last week to get it running. Tested out PRs for other team members and gave reviews.

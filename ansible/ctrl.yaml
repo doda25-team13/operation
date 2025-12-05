@@ -57,7 +57,7 @@
 
     - name: Patch Flannel to use eth1 interface (Sed)
       ansible.builtin.shell: |
-        sed -i 's/args:/args:\n        - --iface=eth1/' /home/vagrant/kube-flannel.yml
+        sed -i '/- --kube-subnet-mgr/a\        - --iface=eth1' /home/vagrant/kube-flannel.yml
 
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /home/vagrant/kube-flannel.yml
@@ -93,3 +93,23 @@
       ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
       become: false
       when: "'diff' not in helm_plugin_list.stdout"
+
+
+    - name: Ensure python3 and pip exist
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Install Kubernetes Python client (for k8s Ansible modules)
+      pip:
+        name:
+          - kubernetes
+          - requests
+          - pyyaml
+          - openshift
+        extra_args: --break-system-packages
+      become: yes
