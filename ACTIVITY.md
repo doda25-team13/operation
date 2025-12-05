@@ -56,4 +56,11 @@
 
 - Pranav
     - https://github.com/doda25-team13/operation/pull/18
-      Worked on steps 13-17, still some issues that need to be sorted out to get it running 
+      Worked on steps 13-17, still some issues that need to be sorted out to get it running
+      
+### Week Q2.4
+
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/24
+ 
+  Early in the week I have finished steps 18 & 19 of A2. Then I have checked and solved an issue with step 15 of A2. Afterwards, I made the docker compose file we had made in A1 into Kubernetes for A3.
