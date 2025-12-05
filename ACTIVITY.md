@@ -74,3 +74,7 @@
   - https://github.com/doda25-team13/operation/pull/24
  
   Early in the week I have finished steps 18 & 19 of A2. Then I have checked and solved an issue with step 15 of A2. Afterwards, I made the docker compose file we had made in A1 into Kubernetes for A3.
+
+- Pranav
+    - https://github.com/doda25-team13/app/pull/6
+  Worked on steps exposing metrics on the app service, Also improved the PR from last week to get it running. Tested out PRs for other team members and gave reviews.
