@@ -67,3 +67,10 @@
 
 - Vasil
     - worked on steps 20,21 but they were not finished in W3
+      
+### Week Q2.4
+
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/24
+ 
+  Early in the week I have finished steps 18 & 19 of A2. Then I have checked and solved an issue with step 15 of A2. Afterwards, I made the docker compose file we had made in A1 into Kubernetes for A3.
