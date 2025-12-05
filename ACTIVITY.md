@@ -32,7 +32,14 @@
 
 - Pranav
     - Due to the nature of task dependency, I have not been able to add a ton of code to the respositories this week. I was supposed to work on F11.
-    - I have primarily worked on understanding and giving code reviews for each open PR for tasks F1-F7    
+    - I have primarily worked on understanding and giving code reviews for each open PR for tasks F1-F7    4
+
+- Vasil
+    - https://github.com/doda25-team13/operation/pull/12
+    - https://github.com/doda25-team13/model-service/pull/6
+    - https://github.com/doda25-team13/app/pull/5
+
+    I have worked on F7 and F8
 
 
 ### Week Q2.3 
@@ -57,6 +64,9 @@
 - Pranav
     - https://github.com/doda25-team13/operation/pull/18
       Worked on steps 13-17, still some issues that need to be sorted out to get it running
+
+- Vasil
+    - worked on steps 20,21 but they were not finished in W3
       
 ### Week Q2.4
 
