@@ -55,4 +55,39 @@ ssh -i ~/.ssh/id_ed25519 vagrant@192.168.56.101
 
 
 
+# Running in Kubernetes (A3)
 
+## Intial minikube setup
+```bash
+minikube start --driver=docker # can be replaced with --driver=virtualbox if issues arise
+
+# Make sure Ingress controller is enabled
+minikube addons enable ingress
+```
+
+## Project setup
+```bash
+# Install Helm Chart
+helm install app-stack ./app-stack -f app-stack/values.yaml
+
+# Check that pods are ready
+kubectl get pods
+```
+
+## Local ip setup 
+(One time) add ip to `/etc/hosts`
+
+```bash
+#take minikube ip and add it to the /etc/hosts file
+sudo sh -c "echo $(minikube ip) app.stable.example.com >> /etc/hosts"
+
+# check that change was successfull
+sudo nano /etc/hosts
+```
+
+## Access app via Ingress (requires ingress controller)
+```bash
+minikube tunnel  # if using minikube
+```
+
+Go to http://app.stable.example.com/sms

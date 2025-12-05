@@ -7,10 +7,13 @@ app:
   service:
     port: 80
     type: ClusterIP
-  ingress:
-    className: nginx
-    hosts:
-      stable: app.stable.example.com
+
+ingress:
+  enabled: true
+  className: nginx
+  name: app-ingress
+  hosts:
+    stable: app.stable.example.com
 
 model:
   name: model-service
@@ -18,3 +21,9 @@ model:
     repository: ghcr.io/doda25-team13/model-service
     tag: latest
   port: 8081
+
+secret:
+  name: app-secret
+  smtpUser: "placeholder-user"
+  smtpPass: "placeholder-password"
+
