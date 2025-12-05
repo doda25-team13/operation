@@ -78,3 +78,8 @@
 - Pranav
     - https://github.com/doda25-team13/app/pull/6
   Worked on steps exposing metrics on the app service, Also improved the PR from last week to get it running. Tested out PRs for other team members and gave reviews.
+
+- Maria
+  - https://github.com/doda25-team13/operation/pull/23
+  
+  Worked on the "Migrate from Docker Compose to Kubernetes" step of A3
