@@ -65,8 +65,8 @@ minikube addons enable ingress
 ```
 
 ```bash
-# Apply all manifests
-kubectl apply -f k8s/
+# Install Helm Chart
+helm install app-stack ./app-stack -f app-stack/values.yaml
 
 # Check pods
 kubectl get pods
@@ -80,10 +80,12 @@ minikube tunnel  # if using minikube
 (One time) add ip to `/etc/hosts`
 
 ```bash
-minikube ip
+#take minikube ip and add it to the /etc/hosts file
+sudo sh -c "echo $(minikube ip) app.stable.example.com >> /etc/hosts"
 
-#take that ip and add it to the /etc/hosts file
-echo "FOUND_IP sms.local" | sudo tee -a /etc/hosts
+# check that change was successfull
+sudo nano /etc/hosts
+
 ```
 
-Go to http://sms.local
+Go to http://app.stable.example.com/sms
