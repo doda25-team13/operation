@@ -7,6 +7,7 @@
 
   tasks: 
     
+    # step 20
     - name: Copy MetalLB manifest to VM
       copy:
         src: "{{ playbook_dir }}/metallb/metallb-native.yaml"
