@@ -6,7 +6,7 @@
 .idea
 .vagrant
 kubeconfig
-
+*.deb
 # BlueJ files
 *.ctxt
 
