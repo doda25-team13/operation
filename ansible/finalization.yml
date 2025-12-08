@@ -8,6 +8,20 @@
   tasks: 
     
     # step 20
+    - name: Check if running on single node cluster
+      shell: |
+        kubectl get nodes --kubeconfig={{ kubeconfig_path }} --no-headers | wc -l
+      register: node_count
+      changed_when: false
+
+    - name: Remove control-plane taint to allow scheduling on control-plane node
+      shell: |
+        kubectl taint nodes --all node-role.kubernetes.io/control-plane- --kubeconfig={{ kubeconfig_path }}
+      when: node_count.stdout | int == 1
+      register: taint_removal
+      failed_when: false
+      changed_when: "'untainted' in taint_removal.stdout or 'not found' not in taint_removal.stderr"
+
     - name: Copy MetalLB manifest to VM
       copy:
         src: "{{ playbook_dir }}/metallb/metallb-native.yaml"
@@ -20,6 +34,42 @@
         state: present
         src: /tmp/metallb-native.yaml
         kubeconfig: "{{ kubeconfig_path }}"
+
+    - name: Wait for MetalLB controller deployment to be available
+      shell: |
+        kubectl wait --for=condition=available \
+          deployment/controller \
+          -n metallb-system \
+          --timeout=180s \
+          --kubeconfig={{ kubeconfig_path }}
+      register: controller_deployment_wait
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: controller_deployment_wait.rc == 0
+
+    - name: Wait for MetalLB speaker daemonset
+      shell: |
+        kubectl rollout status daemonset/speaker \
+          -n metallb-system \
+          --timeout=180s \
+          --kubeconfig={{ kubeconfig_path }}
+      register: speaker_wait
+      changed_when: false
+
+    - name: Wait for MetalLB controller pod to be ready
+      shell: |
+        kubectl wait -n metallb-system \
+          -l app=metallb,component=controller \
+          --for=condition=ready pod \
+          --timeout=120s \
+          --kubeconfig={{ kubeconfig_path }}
+      register: metallb_controller_wait
+      changed_when: false
+
+    - name: Give webhook service time to register with API server
+      pause:
+        seconds: 20
 
     - name: Move IPAddressPool to VM
       copy:
@@ -44,13 +94,7 @@
         state: present
         src: /tmp/l2-advertisement.yaml
         kubeconfig: "{{ kubeconfig_path }}"
-    
-    - name: Wait for MetalLB provisioning
-      shell: |
-        kubectl wait -n metallb-system -l app=metallb,component=controller --for=condition=ready pod --timeout=60s --kubeconfig={{ kubeconfig_path }}
-      register: metallb_wait
-      changed_when: false
-    
+
     # step 21
     - name: Add ingress-nginx helm repo
       kubernetes.core.helm_repository:
@@ -73,11 +117,28 @@
           - /tmp/values.yaml
         state: present
         kubeconfig: "{{ kubeconfig_path }}"
-    
-    - name: Wait for ingress controller pod
+
+    - name: Wait for ingress controller deployment to be ready
       shell: |
-        kubectl wait -n ingress-nginx --for=condition=ready pod -l app.kubernetes.io/component=controller --timeout=90s --kubeconfig={{ kubeconfig_path }}
+        kubectl rollout status deployment/ingress-nginx-controller \
+          -n ingress-nginx \
+          --timeout=180s \
+          --kubeconfig={{ kubeconfig_path }}
       changed_when: false
+      register: ingress_rollout
 
+    - name: Verify ingress controller pod is ready
+      shell: |
+        kubectl get pods -n ingress-nginx \
+          -l app.kubernetes.io/component=controller \
+          -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' \
+          --kubeconfig={{ kubeconfig_path }}
+      register: ingress_ready_status
+      changed_when: false
+      retries: 5
+      delay: 10
+      until: ingress_ready_status.stdout == "True"
 
-    
+    - name: Display ingress controller status
+      debug:
+        msg: "Ingress controller is ready and running"
