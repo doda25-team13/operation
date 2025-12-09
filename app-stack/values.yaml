@@ -27,3 +27,11 @@ secret:
   smtpUser: "placeholder-user"
   smtpPass: "placeholder-password"
 
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      ruleSelector: {}
+  alertmanager:
+    enabled: true
