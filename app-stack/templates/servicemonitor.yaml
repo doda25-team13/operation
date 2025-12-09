@@ -3,7 +3,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ .Values.app.name }}
   labels:
-    release: kube-prometheus-stack
+    app: {{ .Values.app.name }}
 spec:
   namespaceSelector:
     any: true
@@ -21,7 +21,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ .Values.model.name }}
   labels:
-    release: kube-prometheus-stack
+    app: {{ .Values.model.name }}
 spec:
   namespaceSelector:
     any: true
@@ -30,6 +30,6 @@ spec:
       app: {{ .Values.model.name }}
   endpoints:
     - port: http
-      path: metrics
+      path: /metrics
       interval: 15s
       scrapeTimeout: 10s
