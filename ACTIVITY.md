@@ -66,6 +66,8 @@
       Worked on steps 13-17, still some issues that need to be sorted out to get it running
 
 - Vasil
+    - https://github.com/doda25-team13/operation/pull/22
+    - https://github.com/doda25-team13/operation/pull/26
     - worked on steps 20,21 but they were not finished in W3
       
 ### Week Q2.4
@@ -87,3 +89,7 @@
 - Kevin
   - https://github.com/doda25-team13/operation/pull/25
   Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late. 
+
+- Vasil
+  - https://github.com/doda25-team13/operation/pull/27
+  - I worked on the prometheus setup for week 4, however due to tasks from the previous assignment taking longer and still trowing errors I could not merge my assignment 3 tasks by friday week 3.
