@@ -91,3 +91,32 @@ minikube tunnel  # if using minikube
 ```
 
 Go to http://app.stable.example.com/sms
+
+
+## Check metrics of application
+First, forward prometheus and grafana to any port, for an example 9090 and 3000 
+
+```bash
+kubectl port-forward svc/app-stack-kube-prometheus-prometheus 9090:9090 -n default
+kubectl port-forward svc/app-stack-grafana 3000:80
+```
+You can then view the grafana UI and prometheus UI on http://localhost:9090/ and http://localhost:3000
+
+Grafana might require credentials:
+username: admin
+password: prom-operator // or try admin or admin123 
+
+For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self 
+
+You can generate some traffic by opening another terminal and run this:
+```bash
+# Keep this running in a separate terminal window
+while true; do 
+  curl -s -o /dev/null http://app.stable.example.com/sms
+  echo "Request sent..."
+  sleep 1
+done
+```
+
+You should observe changes in the dashboard and even receive some alert 
+
