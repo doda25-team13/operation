@@ -1,0 +1,2 @@
+- import_playbook: general.yaml
+- import_playbook: node.yaml
