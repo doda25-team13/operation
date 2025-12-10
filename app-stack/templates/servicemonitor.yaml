@@ -15,21 +15,3 @@ spec:
       path: /metrics
       interval: 15s
       scrapeTimeout: 10s
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: {{ .Values.model.name }}
-  labels:
-    app: {{ .Values.model.name }}
-spec:
-  namespaceSelector:
-    any: true
-  selector:
-    matchLabels:
-      app: {{ .Values.model.name }}
-  endpoints:
-    - port: http
-      path: /metrics
-      interval: 15s
-      scrapeTimeout: 10s
