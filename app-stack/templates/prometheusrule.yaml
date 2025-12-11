@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Values.app.name }}
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: app.rules
+      rules:
+        - alert: HighRequestRate
+          expr: increase(app_requests_total[2m]) > 30
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High request rate detected"
+            description: "More than 30 requests in 2 minutes (>15/min)."
