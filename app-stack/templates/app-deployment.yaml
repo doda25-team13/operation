@@ -1,26 +1,35 @@
+{{- range .Values.versions.app }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.app.name }}
+  name: {{ $.Values.app.name }}-{{ .name }}
+  labels:
+    app: {{ $.Values.app.name }}
+    version: {{ .name }} # Crucial label for Istio Subsets!
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.app.name }}
+      app: {{ $.Values.app.name }}
+      version: {{ .name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.app.name }}
+        app: {{ $.Values.app.name }}
+        version: {{ .name }}
     spec:
       containers:
-        - name: {{ .Values.app.name }}
-          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        - name: {{ $.Values.app.name }}
+          image: "{{ $.Values.app.image.repository }}:{{ .tag }}"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.app.port }}
+            - containerPort: {{ $.Values.app.port }}
           env:
             - name: SERVER_PORT
-              value: "{{ .Values.app.port }}"
+              value: "{{ $.Values.app.port }}"
 
             - name: MODEL_HOST
-              value: "http://{{ .Values.model.name }}:{{ .Values.model.port }}"
+              value: "http://{{ $.Values.model.name }}:{{ $.Values.model.port }}"
+{{- end }}
+

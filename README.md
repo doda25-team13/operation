@@ -146,3 +146,33 @@ You should observe changes in the dashboard
 The /metrics api provides wrong data \
 The pods takes awfully long to initialize until they run on Kevin's machine (after merging enable-monitoring) \
 Some warning / bugged output when installing the release with Helm  
+
+
+## Traffic Management (A4)
+
+Start kubernetes cluster with minikube and install instio
+```bash
+minikube start --driver=docker
+
+# Install Istio 
+istioctl install
+kubectl label namespace default istio-injection=enabled --overwrite
+ 
+helm install app-stack ./app-stack
+
+# Install monitoring addons from istio samples folder
+kubectl apply -f <path to istio>/samples/addons/prometheus.yaml
+kubectl apply -f <path to istio>/samples/addons/kiali.yaml 
+
+# Verify pods are up 
+kubectl get pods
+```
+All pods should show 2/2 (application container + Istio sidecar proxy).
+
+---
+Run `minikube tunnel` following the [update](#local-ip-setup-) to `/etc/hosts` (which you should've done for previous steps)
+You can find the app running on Go to http://app.stable.example.com/sms
+
+
+
+We simulated testing by simulating traffic on the browser and verifying the routing on the Kiali dahsboard which can be started by running `istioctl dashboard kiali`
