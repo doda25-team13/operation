@@ -65,6 +65,18 @@ minikube start --driver=docker # can be replaced with --driver=virtualbox if iss
 minikube addons enable ingress
 ```
 
+## Update dependencies
+```bash
+# Navigate to app-stack
+cd app-stack
+
+# Update dependencies
+helm dependency update
+
+# navigate back to root
+cd ../
+```
+
 ## Project setup
 ```bash
 # Install Helm Chart
@@ -91,3 +103,12 @@ minikube tunnel  # if using minikube
 ```
 
 Go to http://app.stable.example.com/sms
+
+## Access the Prometheus UI
+```bash
+# Port forward prometheus service
+kubectl port-forward svc/app-stack-kube-prometheus-prometheus 9090:9090 -n default
+```
+
+Prometheus should be available at http://localhost:9090 \
+Check the services that are being scrpaed at Status --> Targets in the Prometheus UI
