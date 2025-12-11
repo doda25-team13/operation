@@ -115,18 +115,18 @@ Check the services that are being scrpaed at Status --> Targets in the Prometheu
 
 
 ## Access Grafana
-Forward  grafana to any port, for an example 3000 
-You can use the & to run it in the background, omitting opening another terminal
+Forward  grafana to any port, for an example 3000 \
+You can use the & to run the command in the background, omitting opening another terminal
 ```bash
 kubectl port-forward svc/app-stack-grafana 3000:80 & 
 ```
 You can then view the grafana UI on http://localhost:3000
 
-Grafana might require credentials, this can be decoded from the repository:
-username: admin
+Grafana might require credentials, this can be decoded from the repository: \
+username: admin \
 password: prom-operator // or try admin or admin123 
 
-For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self 
+For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self or viewing the http://app.stable.example.com/metrics
 
 To find our dashboard, go to Dashboards --> App Usability Metrics
 
@@ -141,3 +141,8 @@ done
 ```
 
 You should observe changes in the dashboard 
+
+### Known issues:
+The /metrics api provides wrong data \
+The pods takes awfully long to initialize until they run on Kevin's machine (after merging enable-monitoring) \
+Some warning / bugged output when installing the release with Helm  
