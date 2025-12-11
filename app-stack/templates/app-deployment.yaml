@@ -1,4 +1,4 @@
-{{- range .Values.app.versions }}
+{{- range .Values.versions.app }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,3 +32,4 @@ spec:
             - name: MODEL_HOST
               value: "http://{{ $.Values.model.name }}:{{ $.Values.model.port }}"
 {{- end }}
+

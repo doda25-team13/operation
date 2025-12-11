@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: app-service-route
+spec:
+  hosts:
+    - "*" # Must match the Gateway host
+  gateways:
+    - app-gateway
+  http:
+    - route:
+        {{- range .Values.versions.app }}
+        - destination:
+            host: {{ $.Values.app.name }}
+            subset: {{ .name }}
+          weight: {{ .weight }}
+        {{- end }}

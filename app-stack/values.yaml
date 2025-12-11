@@ -4,10 +4,10 @@ app:
     repository: ghcr.io/doda25-team13/app
   versions:
     - name: v1
-      tag: 1.1.6
+      tag: latest
       weight: 90
     - name: v2
-      tag: 1.1.3
+      tag: latest
       weight: 10
   port: 8080
   service:
@@ -41,3 +41,17 @@ kube-prometheus-stack:
       ruleSelector: {}
   alertmanager:
     enabled: true
+
+versions:
+  app:
+    - name: v1
+      tag: latest
+      weight: 90
+    - name: v2
+      tag: latest
+      weight: 10
+  model:
+    - name: v1
+      tag: latest
+    - name: v2
+      tag: latest

@@ -7,15 +7,14 @@ spec:
   trafficPolicy:
     loadBalancer:
       consistentHash:
-        # httpHeaderName: x-user-id
+        httpHeaderName: x-user-id  # for per-user
         # Or For simple browser testing without custom headers, use a cookie:
-        httpCookie:
-          name: session-cookie
-          ttl: 0s
+        # httpCookie:
+        #   name: session-cookie
+        #   ttl: 0s
   subsets:
-    - name: v1
+    {{- range .Values.versions.app }}
+    - name: {{ .name }}
       labels:
-        version: v1
-    - name: v2
-      labels:
-        version: v2
+        version: {{ .name }}
+    {{- end }}

@@ -1,28 +1,36 @@
+{{- range .Values.versions.model }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.model.name }}
+  name: {{ $.Values.model.name }}-{{ .name }}
+  labels:
+    app: {{ $.Values.model.name }}
+    version: {{ .name }} # Crucial label for Istio Subsets!
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.model.name }}
+      app: {{ $.Values.model.name }}
+      version: {{ .name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.model.name }}
+        app: {{ $.Values.model.name }}
+        version: {{ .name }}
     spec:
       containers:
-        - name: {{ .Values.model.name }}
-          image: "{{ .Values.model.image.repository }}:{{ .Values.model.image.tag }}"
+        - name: {{ $.Values.model.name }}
+          image: "{{ $.Values.model.image.repository }}:{{ .tag }}"
           ports:
-            - containerPort: {{ .Values.model.port }}
+            - containerPort: {{ $.Values.model.port }}
           env:
             - name: MODEL_SERVICE_PORT
-              value: "{{ .Values.model.port }}"
+              value: "{{ $.Values.model.port }}"
           volumeMounts:
             - name: model-output
               mountPath: /models
       volumes:
         - name: model-output
           emptyDir: {}
+{{- end }}

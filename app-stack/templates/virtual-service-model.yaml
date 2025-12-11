@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: model-service-route }
+spec:
+  hosts:
+    - {{ .Values.model.name }}
+  http:
+    {{- range .Values.versions.model }}
+    - match:
+        - sourceLabels:
+            version: {{ .name }}
+      route:
+        - destination:
+            host: {{ $.Values.model.name }}
+            subset: {{ .name }}
+          headers:
+            response:
+              add:
+                x-model-version: "{{ .name }}"
+    {{- end }}
+    - route: # default route
+      - destination:
+          host: {{ .Values.model.name }}
+          subset: v1
