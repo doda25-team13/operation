@@ -112,3 +112,32 @@ kubectl port-forward svc/app-stack-kube-prometheus-prometheus 9090:9090 -n defau
 
 Prometheus should be available at http://localhost:9090 \
 Check the services that are being scrpaed at Status --> Targets in the Prometheus UI
+
+
+## Access Grafana
+Forward  grafana to any port, for an example 3000 
+You can use the & to run it in the background, omitting opening another terminal
+```bash
+kubectl port-forward svc/app-stack-grafana 3000:80 & 
+```
+You can then view the grafana UI on http://localhost:3000
+
+Grafana might require credentials, this can be decoded from the repository:
+username: admin
+password: prom-operator // or try admin or admin123 
+
+For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self 
+
+To find our dashboard, go to Dashboards --> App Usability Metrics
+
+You can generate some traffic by opening another terminal and run this:
+```bash
+# Keep this running in a separate terminal window
+while true; do 
+  curl -s -o /dev/null http://app.stable.example.com/sms
+  echo "Request sent..."
+  sleep 1
+done
+```
+
+You should observe changes in the dashboard 
