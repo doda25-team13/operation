@@ -157,10 +157,12 @@ minikube start --driver=docker
 # Install Istio 
 istioctl install
 kubectl label namespace default istio-injection=enabled --overwrite
+ 
+helm install app-stack ./app-stack
 
-# Install monitoring addons from istio samples
-kubectl apply -f samples/addons/prometheus.yaml
-kubectl apply -f samples/addons/kiali.yaml 
+# Install monitoring addons from istio samples folder
+kubectl apply -f <path to istio>/samples/addons/prometheus.yaml
+kubectl apply -f <path to istio>/samples/addons/kiali.yaml 
 
 # Verify pods are up 
 kubectl get pods
@@ -168,6 +170,9 @@ kubectl get pods
 All pods should show 2/2 (application container + Istio sidecar proxy).
 
 ---
-Run `minikube tunnel` following updating `/etc/hosts` with this hostname and ip
+Run `minikube tunnel` following the [update](#local-ip-setup-) to `/etc/hosts` (which you should've done for previous steps)
+You can find the app running on Go to http://app.stable.example.com/sms
+
+
 
 We simulated testing by simulating traffic on the browser and verifying the routing on the Kiali dahsboard which can be started by running `istioctl dashboard kiali`
