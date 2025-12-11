@@ -7,15 +7,16 @@
   "graphTooltip": 0,
   "id": null,
   "links": [],
+  "refresh": "5s",
   "panels": [
     {
-      "title": "Requests per Second",
+      "title": "Total Requests",
       "type": "graph",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "rate(app_requests_total[2m])",
-          "legendFormat": "{{method}}",
+          "expr": "app_requests_total",
+          "legendFormat": "{{application}}",
           "refId": "A"
         }
       ]
@@ -29,6 +30,27 @@
           "expr": "app_active_sessions",
           "legendFormat": "Sessions",
           "refId": "B"
+        }
+      ]
+    },
+    {
+      "title": "Request Latency (P95)",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(app_request_latency_seconds_bucket[5m])) by (le, application))",
+          "legendFormat": "{{application}} P95",
+          "refId": "C"
+        }
+      ],
+      "yaxes": [
+        {
+          "format": "s",
+          "show": true
+        },
+        {
+          "show": true
         }
       ]
     }
