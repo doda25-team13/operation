@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-dashboards
+  labels:
+    grafana_dashboard: "1"  # This label allows the Grafana sidecar to auto-discover this file
+    app: {{ .Release.Name }}
+data:
+  app-metrics.json: |
+{{ .Files.Get "dashboards/app-metrics.json" | indent 4 }}
