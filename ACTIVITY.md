@@ -88,8 +88,11 @@
 
 - Kevin
   - https://github.com/doda25-team13/operation/pull/25
-  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late. 
+  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late.
+  I also reviewed other's PR including https://github.com/doda25-team13/operation/pull/23 and https://github.com/doda25-team13/operation/pull/27
 
 - Vasil
   - https://github.com/doda25-team13/operation/pull/27
   - I worked on the prometheus setup for week 4, however due to tasks from the previous assignment taking longer and still trowing errors I could not merge my assignment 3 tasks by friday week 3.
+ 
+ 
