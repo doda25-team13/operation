@@ -110,3 +110,7 @@
   - https://github.com/doda25-team13/app/pull/8
   - https://github.com/doda25-team13/model-service/pull/9
   - I fused the workflows in both the app and the model-service so that our packages are concistent and do not build the same image multiple times. I also started working on the continuous experimentation part of A4.
+
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/29
+  - Added traffic management (A4), also working on making vagrant up step faster.
