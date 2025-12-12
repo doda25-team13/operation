@@ -105,3 +105,8 @@
 - Vasil
   - https://github.com/doda25-team13/operation/pull/27
   - I finished the prometheus setup from A3
+ 
+- Leonidas
+- https://github.com/doda25-team13/app/pull/8
+- https://github.com/doda25-team13/model-service/pull/9
+- I fused the workflows in both the app and the model-service so that our packages are concistent and do not build the same image multiple times. I also started working on the continuous experimentation part of A4.
