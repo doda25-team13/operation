@@ -30,6 +30,8 @@ spec:
           volumeMounts:
             - name: model-output
               mountPath: /models
+          resources:
+            {{- toYaml $.Values.model.resources | nindent 12 }}
       volumes:
         - name: model-output
           emptyDir: {}

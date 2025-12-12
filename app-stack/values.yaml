@@ -13,6 +13,13 @@ app:
   service:
     port: 80
     type: ClusterIP
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
 
 ingress:
   enabled: true
@@ -27,6 +34,13 @@ model:
     repository: ghcr.io/doda25-team13/model-service
     tag: latest
   port: 8081
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
 
 secret:
   name: app-secret
@@ -39,8 +53,23 @@ kube-prometheus-stack:
       serviceMonitorSelectorNilUsesHelmValues: false
       serviceMonitorSelector: {}
       ruleSelector: {}
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "128Mi"
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
   alertmanager:
     enabled: true
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "256Mi"
+
 
 versions:
   app:
