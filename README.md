@@ -150,9 +150,9 @@ Some warning / bugged output when installing the release with Helm
 
 ## Traffic Management (A4)
 
-Start kubernetes cluster with minikube and install instio
+Start kubernetes cluster with minikube and install instio. Istio installation recommends 4 CPU cores.
 ```bash
-minikube start --driver=docker
+minikube start --cpus=4 --memory=8192 --driver=docker
 
 # Install Istio 
 istioctl install

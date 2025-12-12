@@ -31,5 +31,7 @@ spec:
 
             - name: MODEL_HOST
               value: "http://{{ $.Values.model.name }}:{{ $.Values.model.port }}"
+          resources:
+            {{- toYaml $.Values.app.resources | nindent 12 }}
 {{- end }}
 
