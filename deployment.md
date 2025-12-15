@@ -3,7 +3,7 @@
 
 ## System context
 
-The system is deployed into an already deployed Kubernetes cluster. The cluster provides the following:
+The system is deployed into an already existing Kubernetes cluster. The cluster provides the following:
 - A Kubernettes control pane and worker nodes
 - An Istio service mesh instalation
 - An Istio IngressGateway
