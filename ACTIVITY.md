@@ -119,3 +119,7 @@
   - https://github.com/doda25-team13/operation/pull/31
   - https://github.com/doda25-team13/app/pull/7
   - This week, I fixed some issues we found when it came to authentication and minikube resources, and started working on Rate Limits in Istio (but no PR for that yet)
+ 
+- Kevin
+  - https://github.com/doda25-team13/operation/pull/25
+  I finished the grafana PR and started working on A4: the extension proposal 
