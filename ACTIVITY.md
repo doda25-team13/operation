@@ -123,3 +123,9 @@
 - Kevin
   - https://github.com/doda25-team13/operation/pull/25
   I finished the grafana PR and started working on A4: the extension proposal 
+
+### Week Q2.6 
+- Kevin
+  https://github.com/doda25-team13/operation/pull/33
+  I started working on the more advanced features of Grafana and Prometheus
+  
