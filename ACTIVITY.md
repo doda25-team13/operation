@@ -129,3 +129,7 @@
   https://github.com/doda25-team13/operation/pull/33
   I started working on the more advanced features of Grafana and Prometheus
   
+- Leonidas
+- https://github.com/doda25-team13/operation/pull/34
+- I almost finished the continuous experimentation part of A4. Running into an issue with browser caching. Not sure how to solve this yet.
+  
