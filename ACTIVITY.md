@@ -132,4 +132,8 @@
 - Leonidas
   - https://github.com/doda25-team13/operation/pull/34
   - I almost finished the continuous experimentation part of A4. Running into an issue with browser caching. Not sure how to solve this yet.
+
+- Maria
+  - https://github.com/doda25-team13/operation/pull/35
+  - I implemented the global rate limit, but I was still having some issues with the user rate limit, so that will be implemented in the following weeks.
   
