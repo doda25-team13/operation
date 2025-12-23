@@ -30,3 +30,9 @@ models-cache/
 .venv/
 .vagrant/
 kubeconfig
+
+# Helm chart lock file
+Chart.lock
+
+# kube-prometheus-stack chart directory
+kube-prometheus-stack-*
