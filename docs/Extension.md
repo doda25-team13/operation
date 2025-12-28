@@ -5,7 +5,7 @@ This document outlines a proposal for extending the existing system to overcome 
 The current project deployment strategy is manual and tedious. While the Helm chart centralizes the configuration, the actual application state in the cluster can differ a lot depending on the state of the local machine. We often saw issues where it only works on the developer's  machine. 
 
 ## Proposed Extension
-ArgoCD is a Kubernetes controller that continuously monitors the operations repository. It compares the desired state defined in the Git repo against the actual live state in the cluster. If they differ, ArgoCD automatically syncs the cluster to match Git. 
+ArgoCD is a Kubernetes controller that continuously monitors the operations repository. It compares the desired state defined in the Git repo against the actual live state in the cluster. If they differ, ArgoCD automatically syncs the cluster to match Git [1]. 
 
 
 ## Implementation Details
@@ -15,7 +15,7 @@ ArgoCD is a Kubernetes controller that continuously monitors the operations repo
 
 ## Expected Outcomes & Verification
 1. Single Source of Truth: The Git repository becomes the absolute truth. If it's not in Git, it doesn't exist in the cluster. 
-2. Automated Pruning and Healing: Automatically removes resources that are no longer defined in Git and reverts any manual changes made directly in the cluster that is not in Git. 
+2. Automated Pruning and Healing: Automatically removes resources that are no longer defined in Git and reverts any manual changes made directly in the cluster that is not in Git [3].  
 3. Automatic Retry Refresh: If a deployment fails and a new fix is pushed to Git. ArgoCD will automatically pick up and try the newer version.
 4. ArgoCD Dashboard: A web-based dashboard provides visibility into the application state, sync status, and a tree of application and their details. 
 
@@ -34,3 +34,8 @@ To address this, we propose a more modular approach to task assignments. Instead
 Currently, the system crashes / does not behave correctly when there are issues with the yaml config files. This is because there are no checks to validate the config files before they are used at runtime. This increases the diffuculty of pinning down the source of the bugs / crashes. To address this, we can utilize linter for YAML like YAMLlint before any runtime execution. This linter will check for common issues such as syntax errors, missing required fields etc. 
 
 
+
+
+## References
+1. Argo Project. (n.d.). Argo CD - Declarative GitOps CD for Kubernetes. Retrieved from https://argo-cd.readthedocs.io/en/stable/
+2. Argo Project. (n.d.). Automated Sync Policy: Pruning and Self-Healing. Argo CD Documentation. Retrieved from https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/
