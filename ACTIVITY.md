@@ -119,3 +119,21 @@
   - https://github.com/doda25-team13/operation/pull/31
   - https://github.com/doda25-team13/app/pull/7
   - This week, I fixed some issues we found when it came to authentication and minikube resources, and started working on Rate Limits in Istio (but no PR for that yet)
+ 
+- Kevin
+  - https://github.com/doda25-team13/operation/pull/25
+  I finished the grafana PR and started working on A4: the extension proposal 
+
+### Week Q2.6 
+- Kevin
+  - https://github.com/doda25-team13/operation/pull/33
+  - I started working on the more advanced features of Grafana and Prometheus
+  
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/34
+  - I almost finished the continuous experimentation part of A4. Running into an issue with browser caching. Not sure how to solve this yet.
+
+- Maria
+  - https://github.com/doda25-team13/operation/pull/35
+  - I implemented the global rate limit, but I was still having some issues with the user rate limit, so that will be implemented in the following weeks.
+  
