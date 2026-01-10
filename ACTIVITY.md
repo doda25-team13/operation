@@ -126,7 +126,7 @@
 
 ### Week Q2.6 
 - Kevin
-  - https://github.com/doda25-team13/operation/pull/33
+  - https://github.com/doda25-team13/operation/pull/33 (The extension proposal)
   - I started working on the more advanced features of Grafana and Prometheus
   
 - Leonidas
@@ -144,4 +144,8 @@
   - https://github.com/doda25-team13/app/pull/9
   - https://github.com/doda25-team13/model-service/pull/10
   - Found what was causing the issue I was running on, with the continuous experimentation part of A4. When Sticky Sessions are implemented this issue should not persist. In addition, I went through assignment 1 to try and get excellent on all parts. I believe assignment 1 is now almost fully done. Just have to go back and change the images used for docker compose to match the images that we will be using for the final Kubernetes deployment.
+ 
+- Kevin
+   - Email alert in prometheus / alertmanager   
+   - https://github.com/doda25-team13/operation/pull/37
   
