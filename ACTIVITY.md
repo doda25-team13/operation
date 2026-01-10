@@ -136,6 +136,10 @@
 - Maria
   - https://github.com/doda25-team13/operation/pull/35
   - I implemented the global rate limit, but I was still having some issues with the user rate limit, so that will be implemented in the following weeks.
+
+- Vasil
+  - https://github.com/doda25-team13/operation/pull/32
+  - Completed merge requests from previous week. Started with deployment documentation file from A4, but it wasn't finished.
  
 ### Week Q2.7
 - Leonidas
