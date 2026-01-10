@@ -30,3 +30,5 @@ models-cache/
 .venv/
 .vagrant/
 kubeconfig
+**/Chart.lock
+app-stack/charts/*.tgz

@@ -122,9 +122,9 @@ kubectl port-forward svc/app-stack-grafana 3000:80 &
 ```
 You can then view the grafana UI on http://localhost:3000
 
-Grafana might require credentials, this can be decoded from the repository: \
+Grafana login requires credentials from the values.yaml: \
 username: admin \
-password: prom-operator // or try admin or admin123 
+password: admin // or try prom-operator or admin123 
 
 For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self or viewing the http://app.stable.example.com/metrics
 
@@ -147,6 +147,24 @@ The /metrics api provides wrong data \
 The pods takes awfully long to initialize until they run on Kevin's machine (after merging enable-monitoring) \
 Some warning / bugged output when installing the release with Helm  
 
+
+## Test Email Alerts
+Alert has been defined in the values.yaml
+The behaviour of the alertmanager is defined in the template/alert-manager-secret.yaml
+Placeholder values for the smtpUser , smtpPassword are defined in the values.yaml 
+The current alert is very simpel and prone to trigger (total_request >= 2) for testing purposes
+It sends an email to itself, 
+
+Start the application overriding the placeholder with actual email, and app password (note that this is not your usual password, also it must be without spaces) 
+```
+helm install app-stack ./app-stack -f app-stack/values.yaml \
+  --set secret.smtpUser=real@email.com \
+  --set secret.smtpPass=realpassword
+```
+
+### Troubleshoot
+If you did not receive the email: check if the Prometheus has fired the alert under the tab Alerts
+Also check if you spelled your credentials correctly.
 
 ## Traffic Management (A4)
 
