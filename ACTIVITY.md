@@ -140,6 +140,10 @@
 - Vasil
   - https://github.com/doda25-team13/operation/pull/32
   - Completed merge requests from previous week. Started with deployment documentation file from A4, but it wasn't finished.
+
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/36/files
+  - Improved Vagrant setup     
  
 ### Week Q2.7
 - Leonidas
