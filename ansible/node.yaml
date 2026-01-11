@@ -1,5 +1,5 @@
 ---
-- hosts: node-*
+- hosts: workers
   become: yes
   tasks:
     - name: Install Worker Dependencies (Placeholder)
