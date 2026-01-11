@@ -156,4 +156,7 @@
 - Kevin
    - Email alert in prometheus / alertmanager   
    - https://github.com/doda25-team13/operation/pull/37
-  
+
+- Pranav
+  - https://github.com/doda25-team13/app/pull/10
+  - Worked on custom app metrics
