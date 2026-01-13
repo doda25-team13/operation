@@ -84,3 +84,6 @@ versions:
       tag: latest
     - name: v2
       tag: latest
+
+ratelimit:
+  domain: ratelimit

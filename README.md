@@ -176,3 +176,69 @@ You can find the app running on Go to http://app.stable.example.com/sms
 
 
 We simulated testing by simulating traffic on the browser and verifying the routing on the Kiali dahsboard which can be started by running `istioctl dashboard kiali`
+
+
+## Istio Rate Limiting Demo
+
+The following commands show how to deploy Redis + Envoy Ratelimit and test global rate limiting using Istio ingressgateway. 
+
+Note: The limit only applies to the `/sms/` path, as to not create issues with other components of the application.
+
+### Prerequisites
+
+- Kubernetes cluster
+- Istio installed
+- kubectl and curl installed
+- Helm
+
+### Testing Rate Limiting
+
+```bash
+# Follow steps from previous section ## Traffic Management
+
+# Verify the pod:
+kubectl get pods -n istio-system
+
+minikube tunnel
+
+
+# Test the limit 
+for i in {1..15}; do
+  curl -s -o /dev/null -w "Request $i: %{http_code}\n" http://app.stable.example.com/sms/
+done
+```
+
+Expected output:
+
+```bash
+Request 1: 200
+Request 2: 200
+...
+Request 10: 200
+Request 11: 429
+Request 12: 429
+...
+```
+
+
+### If encountering issues
+Minikube + VirtualBox requires NodePort exposure for ingressgateway because LoadBalancer type doesn’t work locally.
+
+If using VirtualBox as a driver, this might help with the 500 error:
+
+```bash
+kubectl patch svc istio-ingressgateway \
+  -n istio-system \
+  --type merge \
+  -p '{"spec":{"type":"NodePort"}}'
+
+kubectl get svc -n istio-system istio-ingressgateway
+```
+
+Get the `:80` port, append it to curl address. For example:
+
+```bash
+for i in {1..15}; do
+  curl -i http://app.stable.example.com:30971/sms/
+done
+```
