@@ -10,7 +10,7 @@ data:
     domain: {{ .Values.ratelimit.domain }}
     descriptors:
       - key: PATH
-        # value: "/sms/"
+        value: "/sms/"
         rate_limit:
           unit: minute
           requests_per_unit: 10

@@ -180,7 +180,9 @@ We simulated testing by simulating traffic on the browser and verifying the rout
 
 ## Istio Rate Limiting Demo
 
-The following commands show how to deploy Redis + Envoy Ratelimit and test global rate limiting using Istio ingressgateway.
+The following commands show how to deploy Redis + Envoy Ratelimit and test global rate limiting using Istio ingressgateway. 
+
+Note: The limit only applies to the `/sms/` path, as to not create issues with other components of the application.
 
 ### Prerequisites
 
