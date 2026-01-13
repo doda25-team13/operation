@@ -4,10 +4,10 @@ app:
     repository: ghcr.io/doda25-team13/app
   versions:
     - name: v1
-      tag: latest
+      tag: latest #TODO change to specific version at the end of development
       weight: 90
     - name: v2
-      tag: latest
+      tag: 1.2.0
       weight: 10
   port: 8080
   service:
@@ -74,10 +74,10 @@ kube-prometheus-stack:
 versions:
   app:
     - name: v1
-      tag: latest
+      tag: latest #TODO change to specific version at the end of development
       weight: 90
     - name: v2
-      tag: latest
+      tag: 1.2.0
       weight: 10
   model:
     - name: v1
