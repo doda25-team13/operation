@@ -4,7 +4,7 @@ app:
     repository: ghcr.io/doda25-team13/app
   versions:
     - name: v1
-      tag: 1.1.8
+      tag: latest #TODO change to specific version at the end of development
       weight: 90
     - name: v2
       tag: 1.2.0
@@ -74,7 +74,7 @@ kube-prometheus-stack:
 versions:
   app:
     - name: v1
-      tag: 1.1.8
+      tag: latest #TODO change to specific version at the end of development
       weight: 90
     - name: v2
       tag: 1.2.0
