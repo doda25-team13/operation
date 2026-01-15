@@ -31,6 +31,7 @@ Vagrant.configure("2") do |config|
       ansible.groups = {
         "controller" => ["ctrl"]
       }
+      ansible.extra_vars = { worker_count: NUM_WORKERS }
     end
   end
 
@@ -54,6 +55,7 @@ Vagrant.configure("2") do |config|
             "controller" => ["ctrl"],
             "workers" => (1..NUM_WORKERS).map { |k| "node-#{k}" }
           }
+          ansible.extra_vars = { worker_count: NUM_WORKERS }
         end
       end
     end
