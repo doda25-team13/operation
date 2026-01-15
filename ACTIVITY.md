@@ -161,7 +161,7 @@
   - https://github.com/doda25-team13/app/pull/10
   - Worked on custom app metrics
 
-### Week Q2.7
+### Week Q2.8
 - Kevin
   - Reviewed https://github.com/doda25-team13/app/pull/10
   - Started working to incorperate these metrics changes in grafana & prometheus : https://github.com/doda25-team13/operation/pull/38
