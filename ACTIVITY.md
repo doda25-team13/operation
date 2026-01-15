@@ -165,3 +165,8 @@
 - Kevin
   - Reviewed https://github.com/doda25-team13/app/pull/10
   - Started working to incorperate these metrics changes in grafana & prometheus : https://github.com/doda25-team13/operation/pull/38
+ 
+- Pranav
+  - Worked on finalizing A1 - Manual release for lib-version, improved Dockerfile for app
+  - https://github.com/doda25-team13/lib-version/pull/4
+  - https://github.com/doda25-team13/app/pull/11
