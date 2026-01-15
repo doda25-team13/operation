@@ -119,3 +119,54 @@
   - https://github.com/doda25-team13/operation/pull/31
   - https://github.com/doda25-team13/app/pull/7
   - This week, I fixed some issues we found when it came to authentication and minikube resources, and started working on Rate Limits in Istio (but no PR for that yet)
+ 
+- Kevin
+  - https://github.com/doda25-team13/operation/pull/25
+  I finished the grafana PR and started working on A4: the extension proposal 
+
+### Week Q2.6 
+- Kevin
+  - https://github.com/doda25-team13/operation/pull/33 (The extension proposal)
+  - I started working on the more advanced features of Grafana and Prometheus
+  
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/34
+  - I almost finished the continuous experimentation part of A4. Running into an issue with browser caching. Not sure how to solve this yet.
+
+- Maria
+  - https://github.com/doda25-team13/operation/pull/35
+  - I implemented the global rate limit, but I was still having some issues with the user rate limit, so that will be implemented in the following weeks.
+
+- Vasil
+  - https://github.com/doda25-team13/operation/pull/32
+  - Completed merge requests from previous week. Started with deployment documentation file from A4, but it wasn't finished.
+
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/36/files
+  - Improved Vagrant setup     
+ 
+### Week Q2.7
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/33
+  - https://github.com/doda25-team13/lib-version/pull/3
+  - https://github.com/doda25-team13/app/pull/9
+  - https://github.com/doda25-team13/model-service/pull/10
+  - Found what was causing the issue I was running on, with the continuous experimentation part of A4. When Sticky Sessions are implemented this issue should not persist. In addition, I went through assignment 1 to try and get excellent on all parts. I believe assignment 1 is now almost fully done. Just have to go back and change the images used for docker compose to match the images that we will be using for the final Kubernetes deployment.
+ 
+- Kevin
+   - Email alert in prometheus / alertmanager   
+   - https://github.com/doda25-team13/operation/pull/37
+
+- Pranav
+  - https://github.com/doda25-team13/app/pull/10
+  - Worked on custom app metrics
+
+### Week Q2.8
+- Kevin
+  - Reviewed https://github.com/doda25-team13/app/pull/10
+  - Started working to incorperate these metrics changes in grafana & prometheus : https://github.com/doda25-team13/operation/pull/38
+ 
+- Pranav
+  - Worked on finalizing A1 - Manual release for lib-version, improved Dockerfile for app
+  - https://github.com/doda25-team13/lib-version/pull/4
+  - https://github.com/doda25-team13/app/pull/11

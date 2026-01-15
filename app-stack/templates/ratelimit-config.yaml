@@ -1,0 +1,33 @@
+# Adapted from https://istio.io/latest/docs/tasks/policy-enforcement/rate-limit/
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ratelimit-config
+  namespace: istio-system
+data:
+  config.yaml: |
+    domain: {{ .Values.ratelimit.domain }}
+    descriptors:
+      - key: PATH
+        value: "/sms/"
+        rate_limit:
+          unit: minute
+          requests_per_unit: 10
+      # - key: USER_ID
+      #   rate_limit:
+      #     unit: minute
+      #     requests_per_unit: 4
+
+  # config.yaml: |
+  #   domain: {{ .Values.ratelimit.domain }}
+  #   descriptors:
+  #     - key: PATH
+  #       value: "/sms"
+  #       rate_limit:
+  #         unit: minute
+  #         requests_per_unit: 10
+  #     - key: PATH
+  #       rate_limit:
+  #         unit: minute
+  #         requests_per_unit: 4

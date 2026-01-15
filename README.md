@@ -122,9 +122,9 @@ kubectl port-forward svc/app-stack-grafana 3000:80 &
 ```
 You can then view the grafana UI on http://localhost:3000
 
-Grafana might require credentials, this can be decoded from the repository: \
+Grafana login requires credentials from the values.yaml: \
 username: admin \
-password: prom-operator // or try admin or admin123 
+password: admin // or try prom-operator or admin123 
 
 For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self or viewing the http://app.stable.example.com/metrics
 
@@ -147,6 +147,24 @@ The /metrics api provides wrong data \
 The pods takes awfully long to initialize until they run on Kevin's machine (after merging enable-monitoring) \
 Some warning / bugged output when installing the release with Helm  
 
+
+## Test Email Alerts
+Alert has been defined in the values.yaml
+The behaviour of the alertmanager is defined in the template/alert-manager-secret.yaml
+Placeholder values for the smtpUser , smtpPassword are defined in the values.yaml 
+The current alert is very simpel and prone to trigger (total_request >= 2) for testing purposes
+It sends an email to itself, 
+
+Start the application overriding the placeholder with actual email, and app password (note that this is not your usual password, also it must be without spaces) 
+```
+helm install app-stack ./app-stack -f app-stack/values.yaml \
+  --set secret.smtpUser=real@email.com \
+  --set secret.smtpPass=realpassword
+```
+
+### Troubleshoot
+If you did not receive the email: check if the Prometheus has fired the alert under the tab Alerts
+Also check if you spelled your credentials correctly.
 
 ## Traffic Management (A4)
 
@@ -176,3 +194,69 @@ You can find the app running on Go to http://app.stable.example.com/sms
 
 
 We simulated testing by simulating traffic on the browser and verifying the routing on the Kiali dahsboard which can be started by running `istioctl dashboard kiali`
+
+
+## Istio Rate Limiting Demo
+
+The following commands show how to deploy Redis + Envoy Ratelimit and test global rate limiting using Istio ingressgateway. 
+
+Note: The limit only applies to the `/sms/` path, as to not create issues with other components of the application.
+
+### Prerequisites
+
+- Kubernetes cluster
+- Istio installed
+- kubectl and curl installed
+- Helm
+
+### Testing Rate Limiting
+
+```bash
+# Follow steps from previous section ## Traffic Management
+
+# Verify the pod:
+kubectl get pods -n istio-system
+
+minikube tunnel
+
+
+# Test the limit 
+for i in {1..15}; do
+  curl -s -o /dev/null -w "Request $i: %{http_code}\n" http://app.stable.example.com/sms/
+done
+```
+
+Expected output:
+
+```bash
+Request 1: 200
+Request 2: 200
+...
+Request 10: 200
+Request 11: 429
+Request 12: 429
+...
+```
+
+
+### If encountering issues
+Minikube + VirtualBox requires NodePort exposure for ingressgateway because LoadBalancer type doesn’t work locally.
+
+If using VirtualBox as a driver, this might help with the 500 error:
+
+```bash
+kubectl patch svc istio-ingressgateway \
+  -n istio-system \
+  --type merge \
+  -p '{"spec":{"type":"NodePort"}}'
+
+kubectl get svc -n istio-system istio-ingressgateway
+```
+
+Get the `:80` port, append it to curl address. For example:
+
+```bash
+for i in {1..15}; do
+  curl -i http://app.stable.example.com:30971/sms/
+done
+```

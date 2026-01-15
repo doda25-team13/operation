@@ -4,10 +4,10 @@ app:
     repository: ghcr.io/doda25-team13/app
   versions:
     - name: v1
-      tag: latest
+      tag: latest #TODO change to specific version at the end of development
       weight: 90
     - name: v2
-      tag: latest
+      tag: 1.2.0
       weight: 10
   port: 8080
   service:
@@ -60,27 +60,55 @@ kube-prometheus-stack:
         limits:
           cpu: "500m"
           memory: "512Mi"
+  defaultRules:
+    create: false
+
   alertmanager:
     enabled: true
-    resources:
-      requests:
-        cpu: "50m"
-        memory: "64Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
+    alertmanagerSpec:
+      useExistingSecret: true
+      configSecret: alertmanager-config
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+        limits:
+          cpu: "200m"
+          memory: "256Mi"
 
+  # Add custom alert rules
+  additionalPrometheusRulesMap:
+    app-alerts:
+      groups:
+        - name: app.rules
+          interval: 30s
+          rules:
+            - alert: HighActiveSessions
+              expr: app_active_sessions >= 2
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High number of active sessions"
+                description: "App has {{ $value }} active sessions (threshold: 2)"
+  grafana:
+    enabled: true
+    adminUser: admin
+    adminPassword: admin123
 
 versions:
   app:
     - name: v1
-      tag: latest
+      tag: latest #TODO change to specific version at the end of development
       weight: 90
     - name: v2
-      tag: latest
+      tag: 1.2.0
       weight: 10
   model:
     - name: v1
       tag: latest
     - name: v2
       tag: latest
+
+ratelimit:
+  domain: ratelimit
