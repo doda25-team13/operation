@@ -32,3 +32,9 @@ models-cache/
 kubeconfig
 **/Chart.lock
 app-stack/charts/*.tgz
+
+# Helm chart lock file
+Chart.lock
+
+# kube-prometheus-stack chart directory
+kube-prometheus-stack-*
