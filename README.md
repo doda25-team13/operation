@@ -143,8 +143,6 @@ done
 You should observe changes in the dashboard 
 
 ### Known issues:
-The /metrics api provides wrong data \
-The pods takes awfully long to initialize until they run on Kevin's machine (after merging enable-monitoring) \
 Some warning / bugged output when installing the release with Helm  
 
 
