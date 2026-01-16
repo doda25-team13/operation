@@ -161,6 +161,9 @@
   - https://github.com/doda25-team13/app/pull/10
   - Worked on custom app metrics
 
+- Maria
+  - no PRs for this week, spent my time reviewing others
+
 ### Week Q2.8
 - Kevin
   - Reviewed https://github.com/doda25-team13/app/pull/10
@@ -170,3 +173,8 @@
   - Worked on finalizing A1 - Manual release for lib-version, improved Dockerfile for app
   - https://github.com/doda25-team13/lib-version/pull/4
   - https://github.com/doda25-team13/app/pull/11
+
+- Maria
+  - https://github.com/doda25-team13/operation/pull/40
+  - https://github.com/doda25-team13/operation/pull/41
+  - Finished the implementation of the additional use case for A4
