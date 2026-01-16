@@ -11,7 +11,7 @@
   "panels": [
     {
       "title": "Total Requests",
-      "type": "graph",
+      "type": "stat",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
@@ -70,7 +70,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
-          "expr": "sum by (le)(increase(request_duration_bucket[1m]))",
+          "expr": "sum by (le)(rate(request_duration_bucket[1m]))",
           "format": "heatmap",
           "refId": "D"
         }
@@ -83,7 +83,7 @@
       }
     },
     {
-      "title": "SMS Length Distribution (Bar Chart)",
+      "title": "Cumulative SMS Length Distribution (Bar Chart)",
       "type": "barchart",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
       "targets": [
@@ -91,7 +91,7 @@
           "expr": "sum(sms_length_bucket) by (le)",
           "format": "table",
           "instant": true,
-          "legendFormat": "{{le}}",
+          "legendFormat": "<{{le}}",
           "refId": "E"
         }
       ],
@@ -113,7 +113,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
       "targets": [
         {
-          "expr": "sum by (le)(increase(sms_length_bucket[1m]))",
+          "expr": "sum by (le)(rate(sms_length_bucket[1m]))",
           "format": "heatmap",
           "refId": "F"
         }
