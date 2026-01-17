@@ -178,3 +178,7 @@
   - https://github.com/doda25-team13/operation/pull/40
   - https://github.com/doda25-team13/operation/pull/41
   - Finished the implementation of the additional use case for A4
+ 
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/42
+  - Fixed the networking between the VMs for A2
