@@ -27,7 +27,7 @@ spec:
               - request_headers:
                   header_name: ":path"
                   descriptor_key: "PATH"
-
-              # - request_headers:
-              #     header_name: "x-user-id"
-              #     descriptor_key: "USER_ID"
+            - actions:
+              - request_headers:
+                  header_name: "x-user-id"
+                  descriptor_key: "USER_ID"

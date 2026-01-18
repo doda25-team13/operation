@@ -220,7 +220,7 @@ kubectl get pods -n istio-system
 minikube tunnel
 
 
-# Test the limit 
+# Test the global limit 
 for i in {1..15}; do
   curl -s -o /dev/null -w "Request $i: %{http_code}\n" http://app.stable.example.com/sms/
 done
@@ -237,6 +237,30 @@ Request 11: 429
 Request 12: 429
 ...
 ```
+
+# Test the user-specific limit 
+```bash
+for i in {1..6}; do
+  curl -s -o /dev/null \
+    -H "x-user-id: user1" \
+    -w "user1 Request $i: %{http_code}\n" \
+    http://app.stable.example.com/sms/
+done
+
+for i in {1..6}; do
+  curl -s -o /dev/null \
+    -H "x-user-id: user2" \
+    -w "user2 Request $i: %{http_code}\n" \
+    http://app.stable.example.com/sms/
+done
+```
+
+Expected Output:
+
+- First 4 requests (user1) are allowed
+- Last 2 Requests (user1) are rejected
+- First 4 requests (user2) are allowed
+- Last 2 requests (user2) are rejected
 
 
 ### If encountering issues
