@@ -174,6 +174,7 @@
   - https://github.com/doda25-team13/lib-version/pull/4
   - https://github.com/doda25-team13/app/pull/11
 
+<<<<<<< HEAD
 - Maria
   - https://github.com/doda25-team13/operation/pull/40
   - https://github.com/doda25-team13/operation/pull/41
@@ -183,6 +184,8 @@
   - https://github.com/doda25-team13/operation/pull/42
   - Fixed the networking between the VMs for A2
 
+=======
+>>>>>>> c0de462 (update activity)
 - Vasil
   - Worked on the deployment architecture diagram and finishing up the deployment documentation
   - https://github.com/doda25-team13/operation/pull/39
