@@ -14,7 +14,7 @@ The application is installed using a Helm chart. All Kubernetes and Istio resour
 
 ### Application
 
-The application consists of two services - frontend (**app**) and backend (**model-service**). They are both deplyed in two versions.
+The application consists of two services - frontend (**app**) and backend (**model-service**). They are both deployed in two versions.
 
 - **app-service**
 
