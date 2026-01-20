@@ -84,7 +84,7 @@ Canary releases are implemented using Istio wighted routing:
 - 90% of requests are routed to **app-service** v1 (stable)
 - 10% of requests are routed to **app-service** v2 (experimental)
 
-To ensure consistency during experimentation v1 of **app-service** is only allowed to communicate with v1 of **model-service**, and v2 of **app-service**, respectively, is only allowed to communicate with v2 of **model-service**.
+To ensure consistency during experimentation, v1 of **app-service** is only allowed to communicate with v1 of **model-service** and, respectively, v2 of **app-service** is only allowed to communicate with v2 of **model-service**.
 
 {Destination rules}
 
