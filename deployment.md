@@ -92,7 +92,7 @@ To ensure consistency during experimentation v1 of **app-service** is only allow
 
 The **app-service** exposes Prometheus metrics on */metrics* that capture user behaviour and system performance. These include counters, gauges and histograms.
 
-Prometheus scprapes the metrics from the frontend and stores them as time-series data. Grafana takes the data from Prometheus and visualizes it in the form of dashboards, which enables easy monitoring and camparisons between the stable and experimental versions.
+Prometheus scrapes the metrics from the frontend and stores them as time-series data. Grafana takes the data from Prometheus and visualizes it in the form of dashboards, which enables easy monitoring and comparisons between the stable and experimental versions.
 
 ## Additional Istio Use Case
 
