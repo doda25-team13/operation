@@ -48,7 +48,7 @@ The following Istio resources are deployed:
 
 - **Prometheus**
     - Deployed as part of the Helm chart
-    - Scpares application metrics from the frontend
+    - Scrapes application metrics from the frontend
 
 - **Grafana**
     - Deplyed alongside Prometheus
