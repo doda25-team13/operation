@@ -51,7 +51,7 @@ The following Istio resources are deployed:
     - Scrapes application metrics from the frontend
 
 - **Grafana**
-    - Deplyed alongside Prometheus
+    - Deployed alongside Prometheus
     - Provides a dashboard for monitoring and experimental evaluation
 
 ## Deployment Architecture
