@@ -1,6 +1,10 @@
 ---
 - hosts: ctrl
   become: yes
+  vars:
+    flannel_version: "0.26.7"
+    helm_version: "v3.13.2"
+
   tasks:
     - name: Install Controller Dependencies (Placeholder)
       debug:
@@ -19,7 +23,6 @@
         --node-name=ctrl
         --pod-network-cidr=10.244.0.0/16
         --ignore-preflight-errors=NumCPU
-      become: true
       when: not admin_conf_check.stat.exists
 
     # Step 14: Setup kubectl
@@ -47,69 +50,55 @@
         flat: yes
 
     # Step 15: Create Pod network
-    - name: Download Flannel manifest
-      ansible.builtin.get_url:
-        url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
-        dest: /home/vagrant/kube-flannel.yml
-        owner: vagrant
-        group: vagrant
-        mode: '0644'
-
-    - name: Patch Flannel to use eth1 interface (Sed)
-      ansible.builtin.shell: |
-        sed -i '/- --kube-subnet-mgr/a\        - --iface=eth1' /home/vagrant/kube-flannel.yml
-
-    - name: Apply Flannel manifest
-      ansible.builtin.command: kubectl apply -f /home/vagrant/kube-flannel.yml
-      become: false
-      # Become false ensures we run as the 'vagrant' user, utilizing the config we set up in Step 14
-
-    # Step 16: Install Helm
-    - name: Download Helm GPG key
-      ansible.builtin.shell: curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-      args:
-        creates: /usr/share/keyrings/helm.gpg
-
-    - name: Add Helm repository
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
-        state: present
-        filename: helm-stable-debian
-
-    - name: Update apt cache and install Helm
-      ansible.builtin.apt:
-        name: helm
-        state: present
-        update_cache: yes
-
-    # Step 17: Install Helm package (helm-diff) - Idempotent
-    - name: Check if helm-diff plugin is installed
-      ansible.builtin.command: helm plugin list
-      become: false
-      register: helm_plugin_list
+    # Checks if flannel interface is already up to ensure idempotency.
+    - name: Check if Flannel is already running
+      command: kubectl --kubeconfig=/etc/kubernetes/admin.conf -n kube-flannel get ds kube-flannel-ds
+      register: flannel_check
+      failed_when: false
       changed_when: false
 
+    - name: Configure and Install Flannel
+      block:
+        - name: Download Flannel manifest
+          get_url:
+            url: https://github.com/flannel-io/flannel/releases/download/v{{ flannel_version }}/kube-flannel.yml
+            dest: /tmp/kube-flannel-original.yml
+            mode: '0644'
+        - name: Modify Flannel manifest to use eth1 interface
+          ansible.builtin.shell: |
+            cp /tmp/kube-flannel-original.yml /tmp/kube-flannel.yml
+            sed -i '/--kube-subnet-mgr/a\        - --iface=eth1' /tmp/kube-flannel.yml
+          args:
+            creates: /tmp/kube-flannel.yml
+        - name: Apply Flannel manifest
+          command: kubectl apply -f /tmp/kube-flannel.yml
+          environment:
+            KUBECONFIG: /etc/kubernetes/admin.conf
+      when: flannel_check.rc != 0
+
+    # Step 16: Install Helm
+    # Replaced Apt Repository method (slow) with direct binary script (fast).
+    - name: Check if Helm is installed
+      stat:
+        path: /usr/local/bin/helm
+      register: helm_bin
+
+    - name: Install Helm (Script Method)
+      shell: |
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      environment:
+        VERIFY_CHECKSUM: "false"
+      when: not helm_bin.stat.exists
+
+    # Step 17: Install Helm package (helm-diff)
+    - name: Check if helm-diff plugin is installed
+      command: helm plugin list
+      become: false # Run as vagrant user
+      register: helm_plugin_list
+      changed_when: false
+      failed_when: false
+
     - name: Install helm-diff plugin
-      ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
-      become: false
+      command: helm plugin install https://github.com/databus23/helm-diff
+      become: false # Run as vagrant user
       when: "'diff' not in helm_plugin_list.stdout"
-
-
-    - name: Ensure python3 and pip exist
-      apt:
-        name:
-          - python3
-          - python3-pip
-        state: present
-        update_cache: yes
-      become: yes
-
-    - name: Install Kubernetes Python client (for k8s Ansible modules)
-      pip:
-        name:
-          - kubernetes
-          - requests
-          - pyyaml
-          - openshift
-        extra_args: --break-system-packages
-      become: yes

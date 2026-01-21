@@ -14,7 +14,7 @@ The application is installed using a Helm chart. All Kubernetes and Istio resour
 
 ### Application
 
-The application consists of two services - frontend (**app**) and backend (**model-service**). They are both deplyed in two versions.
+The application consists of two services - frontend (**app**) and backend (**model-service**). They are both deployed in two versions.
 
 - **app-service**
 
@@ -48,10 +48,10 @@ The following Istio resources are deployed:
 
 - **Prometheus**
     - Deployed as part of the Helm chart
-    - Scpares application metrics from the frontend
+    - Scrapes application metrics from the frontend
 
 - **Grafana**
-    - Deplyed alongside Prometheus
+    - Deployed alongside Prometheus
     - Provides a dashboard for monitoring and experimental evaluation
 
 ## Deployment Architecture
@@ -84,7 +84,7 @@ Canary releases are implemented using Istio wighted routing:
 - 90% of requests are routed to **app-service** v1 (stable)
 - 10% of requests are routed to **app-service** v2 (experimental)
 
-To ensure consistency during experimentation v1 of **app-service** is only allowed to communicate with v1 of **model-service**, and v2 of **app-service**, respectively, is only allowed to communicate with v2 of **model-service**.
+To ensure consistency during experimentation, v1 of **app-service** is only allowed to communicate with v1 of **model-service** and, respectively, v2 of **app-service** is only allowed to communicate with v2 of **model-service**.
 
 {Destination rules}
 
@@ -92,7 +92,7 @@ To ensure consistency during experimentation v1 of **app-service** is only allow
 
 The **app-service** exposes Prometheus metrics on */metrics* that capture user behaviour and system performance. These include counters, gauges and histograms.
 
-Prometheus scprapes the metrics from the frontend and stores them as time-series data. Grafana takes the data from Prometheus and visualizes it in the form of dashboards, which enables easy monitoring and camparisons between the stable and experimental versions.
+Prometheus scrapes the metrics from the frontend and stores them as time-series data. Grafana takes the data from Prometheus and visualizes it in the form of dashboards, which enables easy monitoring and comparisons between the stable and experimental versions.
 
 ## Additional Istio Use Case
 
