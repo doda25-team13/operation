@@ -11,48 +11,164 @@
   "panels": [
     {
       "title": "Total Requests",
-      "type": "graph",
+      "type": "stat",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "app_requests_total",
-          "legendFormat": "{{application}}",
+          "expr": "sms_requests_total",
+          "legendFormat": "Total Requests",
           "refId": "A"
         }
       ]
     },
     {
-      "title": "Active Sessions",
+      "title": "Active Sessions (Last SMS Length)",
       "type": "stat",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "app_active_sessions",
-          "legendFormat": "Sessions",
+          "expr": "last_sms_length_characters",
+          "legendFormat": "Characters",
           "refId": "B"
         }
-      ]
+      ],
+      "options": {
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      }
     },
     {
-      "title": "Request Latency (P95)",
+      "title": "Request Duration P95",
       "type": "graph",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(app_request_latency_seconds_bucket[5m])) by (le, application))",
-          "legendFormat": "{{application}} P95",
+          "expr": "histogram_quantile(0.95, sum(rate(request_duration_bucket[5m])) by (le))",
+          "legendFormat": "P95 Latency",
           "refId": "C"
         }
       ],
       "yaxes": [
         {
           "format": "s",
+          "label": "Duration",
           "show": true
         },
         {
           "show": true
         }
       ]
+    },
+    {
+      "title": "Request Duration Heatmap",
+      "type": "heatmap",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum by (le)(rate(request_duration_bucket[1m]))",
+          "format": "heatmap",
+          "refId": "D"
+        }
+      ],
+      "dataFormat": "tsbuckets",
+      "heatmap": {},
+      "yAxis": {
+        "format": "s",
+        "decimals": 2
+      }
+    },
+    {
+      "title": "Cumulative SMS Length Distribution (Bar Chart)",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(sms_length_bucket) by (le)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "<{{le}}",
+          "refId": "E"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xField": "le",
+        "showValue": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "title": "SMS Length Heatmap",
+      "type": "heatmap",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum by (le)(rate(sms_length_bucket[1m]))",
+          "format": "heatmap",
+          "refId": "F"
+        }
+      ],
+      "dataFormat": "tsbuckets",
+      "heatmap": {},
+      "yAxis": {
+        "format": "short",
+        "decimals": 0,
+        "label": "Characters"
+      }
+    },
+    {
+      "title": "Average SMS Length",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 24 },
+      "targets": [
+        {
+          "expr": "rate(sms_length_sum[5m]) / rate(sms_length_count[5m])",
+          "legendFormat": "Avg Length",
+          "refId": "G"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 1
+        }
+      }
+    },
+    {
+      "title": "Average Request Duration",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 24 },
+      "targets": [
+        {
+          "expr": "rate(request_duration_sum[5m]) / rate(request_duration_count[5m])",
+          "legendFormat": "Avg Duration",
+          "refId": "H"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 3
+        }
+      }
     }
   ],
   "schemaVersion": 21,

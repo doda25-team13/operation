@@ -189,3 +189,7 @@
 - Vasil
   - Worked on the deployment architecture diagram and finishing up the deployment documentation
   - https://github.com/doda25-team13/operation/pull/39
+
+### Week Q2.9
+- Maria
+  - https://github.com/doda25-team13/operation/pull/44
