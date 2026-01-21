@@ -78,6 +78,14 @@ An example request flow:
 6. **model-service** performs the classification task
 7. The result is propagated back to the user following the same steps 
 
+## Traffic Control: Rate Limiting
+
+To protect the application from excessive usage and to ensure fair access, rate limiting is enforced at the Istio IngressGateway.
+
+Incoming HTTP requests are evaluated before routing by an Envoy rate-limit filter, integrated into the gateway. Requests sent after the configured limit is reached are immediately rejected with an HTTP 429 (Too Many Requests) response and are not forwarded to the application service.
+
+These rate limits are applied only to the `/sms/` endpoint, while operational endpoints (such as `/metrics`) remain unrestricted.
+
 ## Canary Releases
 
 Canary releases are implemented using Istio wighted routing:
@@ -93,7 +101,3 @@ To ensure consistency during experimentation, v1 of **app-service** is only allo
 The **app-service** exposes Prometheus metrics on */metrics* that capture user behaviour and system performance. These include counters, gauges and histograms.
 
 Prometheus scrapes the metrics from the frontend and stores them as time-series data. Grafana takes the data from Prometheus and visualizes it in the form of dashboards, which enables easy monitoring and comparisons between the stable and experimental versions.
-
-## Additional Istio Use Case
-
-{Rate Limiting?}
