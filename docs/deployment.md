@@ -55,7 +55,7 @@ The following Istio resources are deployed:
     - Provides a dashboard for monitoring and experimental evaluation
 
 ## Deployment Architecture
-![alt text](image.png)
+![alt text](image-1.png)
 ## Access to Application
 
 The application is accessed through an Istio IngressGateway, using an HTTP endpoint
