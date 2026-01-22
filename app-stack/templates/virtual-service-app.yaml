@@ -8,10 +8,31 @@ spec:
   gateways:
     - app-gateway
   http:
+    {{- range .Values.versions.app }}
+    - match:
+        - uri: { prefix: /sms }
+          headers:
+            cookie:
+              regex: ".*version={{ .name }}.*"
+      route:
+        - destination:
+            host: {{ $.Values.app.name }}
+            subset: {{ .name }}
+          headers:
+            response:
+              add:
+                x-app-version: "{{ .name }}"
+    {{- end }}
     - route:
         {{- range .Values.versions.app }}
         - destination:
             host: {{ $.Values.app.name }}
             subset: {{ .name }}
           weight: {{ .weight }}
+          headers:
+            response:
+              set:
+                Set-Cookie: "version={{ .name }}; Path=/sms; Max-Age=3600"
+              add:
+                x-app-version: "{{ .name }}"
         {{- end }}
