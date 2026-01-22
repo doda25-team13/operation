@@ -88,13 +88,12 @@
 
 - Kevin
   - https://github.com/doda25-team13/operation/pull/25
-  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late. 
+  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late. I also reviewed other's PR including https://github.com/doda25-team13/operation/pull/23 and https://github.com/doda25-team13/operation/pull/27 
 
 - Vasil
   - https://github.com/doda25-team13/operation/pull/27
   - I worked on the prometheus setup for week 4, however due to tasks from the previous assignment taking longer and still trowing errors I could not merge my assignment 3 tasks by friday week 3.
-  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late.
-  I also reviewed other's PR including https://github.com/doda25-team13/operation/pull/23 and https://github.com/doda25-team13/operation/pull/27
+  
 
 - Vasil
   - https://github.com/doda25-team13/operation/pull/26
@@ -174,7 +173,6 @@
   - https://github.com/doda25-team13/lib-version/pull/4
   - https://github.com/doda25-team13/app/pull/11
 
-<<<<<<< HEAD
 - Maria
   - https://github.com/doda25-team13/operation/pull/40
   - https://github.com/doda25-team13/operation/pull/41
@@ -184,8 +182,6 @@
   - https://github.com/doda25-team13/operation/pull/42
   - Fixed the networking between the VMs for A2
 
-=======
->>>>>>> c0de462 (update activity)
 - Vasil
   - Worked on the deployment architecture diagram and finishing up the deployment documentation
   - https://github.com/doda25-team13/operation/pull/39
@@ -193,3 +189,7 @@
 ### Week Q2.9
 - Maria
   - https://github.com/doda25-team13/operation/pull/44
+
+- Vasil
+  - https://github.com/doda25-team13/operation/pull/45
+  - Enxtended and improved the deployment documentation and the deployment diagram
