@@ -43,10 +43,10 @@
         group: vagrant
         mode: '0600'
 
-    - name: Fetch admin.conf to host machine
+    - name: Fetch admin.conf to operation repo root
       ansible.builtin.fetch:
         src: /etc/kubernetes/admin.conf
-        dest: ./kubeconfig
+        dest: "{{ playbook_dir }}/../kubeconfig"
         flat: yes
 
     # Step 15: Create Pod network
