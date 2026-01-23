@@ -166,7 +166,13 @@ Also check if you spelled your credentials correctly.
 
 ## Traffic Management (A4)
 
-Start kubernetes cluster with minikube and install instio. Istio installation recommends 4 CPU cores.
+### Prerequisites
+- Kubernetes cluster
+- Istio installed
+- kubectl and curl installed
+- Helm
+
+Start kubernetes cluster with minikube and install istio. Istio installation recommends 4 CPU cores.
 ```bash
 minikube start --cpus=4 --memory=8192 --driver=docker
 
@@ -183,32 +189,47 @@ kubectl apply -f <path to istio>/samples/addons/kiali.yaml
 # Verify pods are up 
 kubectl get pods
 ```
-All pods should show 2/2 (application container + Istio sidecar proxy).
-
 ---
+To test canary split run the shell script that spins up a container that curls the app 100 times to check the canary split.
+```bash
+bash test-scripts/test-canary-split.sh
+```
+OR to manually test the canary split:
+
 Run `minikube tunnel` following the [update](#local-ip-setup-) to `/etc/hosts` (which you should've done for previous steps)
 You can find the app running on Go to http://app.stable.example.com/sms
 
-
-
 We simulated testing by simulating traffic on the browser and verifying the routing on the Kiali dahsboard which can be started by running `istioctl dashboard kiali`
 
+Sticky sessions are enabled by default, so the same user will always be routed to the same pod. This is implemented by setting cookies on the first request and using them on subsequent requests.
 
+To test sticky sessions, run the following shell script which curls the app after setting cookies on the first request.
+```bash
+bash test-scripts/test-sticky.sh
+```
+Expected output:
+```
+pod/sticky-test created
+pod/sticky-test condition met
+  21 v2
+pod "sticky-test" deleted from default namespace
+```
+**1st request**: went to v1 (or v2)  
+**subsequent 20 requests**: go to the same version
 ## Istio Rate Limiting Demo
 
 The following commands show how to deploy Redis + Envoy Ratelimit and test global rate limiting using Istio ingressgateway. 
 
 Note: The limit only applies to the `/sms/` path, as to not create issues with other components of the application.
 
-### Prerequisites
-
-- Kubernetes cluster
-- Istio installed
-- kubectl and curl installed
-- Helm
-
 ### Testing Rate Limiting
 
+To test the global limit, run the following shell script which curls the app 20 times:
+```bash
+bash test-scripts/test-global-rate-limit.sh
+```
+
+Or to test manually:
 ```bash
 # Follow steps from previous section ## Traffic Management
 

@@ -4,14 +4,6 @@ metadata:
   name: app-service-destination
 spec:
   host: {{ .Values.app.name }}
-  trafficPolicy:
-    loadBalancer:
-      consistentHash:
-        httpHeaderName: x-user-id  # for per-user
-        # Or For simple browser testing without custom headers, use a cookie:
-        # httpCookie:
-        #   name: session-cookie
-        #   ttl: 0s
   subsets:
     {{- range .Values.versions.app }}
     - name: {{ .name }}
