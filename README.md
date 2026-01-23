@@ -291,3 +291,82 @@ for i in {1..15}; do
   curl -i http://app.stable.example.com:30971/sms/
 done
 ```
+
+# Running on Own Kubernetes Cluster
+
+This section describes how to provision the cluster, deploy the application stack, and access the application using the Istio ingress gateway.
+
+## Prerequisites
+- Vagrant
+- Ansible
+- Helm
+- kubectl
+- VirtualBox (or compatible provider)
+
+---
+
+### 1. Start the Virtual Machines
+
+```bash
+vagrant up
+```
+
+### 2. Finalize Cluster Setup with Ansible
+
+Run the Ansible playbook to install and configure:
+
+- Kubernetes
+- MetalLB
+- ingress-nginx
+- Istio
+
+```bash
+ansible-playbook -i inventory.cfg ./ansible/finalization.yaml 
+```
+
+### 3. Update Helm Dependencies
+
+```bash
+helm dependency update ./app-stack 
+```
+
+### 4. Configure kubectl Access
+```bash
+export KUBECONFIG=$PWD/kubeconfig 
+```
+
+### 5. Deploy the Application Stack
+```bash
+helm upgrade --install app-stack ./app-stack
+```
+
+### 6. Verify Cluster Access
+```bash
+kubectl get pods
+kubectl get nodes
+```
+
+### 7. Configure Local DNS Resolution
+```bash
+sudo sh -c 'echo "192.168.56.90 app.stable.example.com" >> /etc/hosts'
+```
+
+### 8. Access Application
+Open the application in your browser: http://app.stable.example.com/sms/
+
+### 9. Configure Kubernetes Dashboard
+```bash
+sudo sh -c 'echo "192.168.56.95 dashboard.stable.example.com" >> /etc/hosts'
+```
+
+### 10. Access Dashboard
+Open the dashboard in your browser: https://dashboard.stable.example.com/
+
+### 11. Login Into Dashboard
+Generate admin token:
+```bash
+kubectl -n kubernetes-dashboard create token admin-user
+```
+Copy and paste the token to login.
+
+
