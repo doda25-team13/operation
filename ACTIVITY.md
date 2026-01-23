@@ -193,3 +193,8 @@
 - Vasil
   - https://github.com/doda25-team13/operation/pull/45
   - Enxtended and improved the deployment documentation and the deployment diagram
+
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/48
+  - https://github.com/doda25-team13/app/pull/12
+  - Worked on running the application on our own cluster. In addition changed pom.xml of app, to use a stable version of lib-version.
