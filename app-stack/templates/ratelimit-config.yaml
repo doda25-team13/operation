@@ -13,8 +13,8 @@ data:
         value: "/sms/"
         rate_limit:
           unit: minute
-          requests_per_unit: 10
+          requests_per_unit: {{ .Values.ratelimit.global_limit }}
       - key: USER_ID
         rate_limit:
           unit: minute
-          requests_per_unit: 4
+          requests_per_unit: {{ .Values.ratelimit.user_limit }}

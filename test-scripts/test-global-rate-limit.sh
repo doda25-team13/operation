@@ -6,7 +6,7 @@ kubectl wait --for=condition=ready pod rate-limit-test --timeout=30s
 
 # Test: All requests should return same version
 kubectl exec rate-limit-test -- sh -c "
-for i in \$(seq 1 20);
+for i in \$(seq 1 110);
   do curl -s -I http://$INGRESS_IP:80/sms/ -H 'Host: app.stable.example.com' | grep HTTP/1.1;
 done" | awk '{$1=""; print $0}' | sort | uniq -c
 
