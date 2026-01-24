@@ -112,3 +112,5 @@ versions:
 
 ratelimit:
   domain: ratelimit
+  global_limit: 100
+  user_limit: 10

@@ -240,7 +240,7 @@ minikube tunnel
 
 
 # Test the global limit 
-for i in {1..15}; do
+for i in {1..110}; do
   curl -s -o /dev/null -w "Request $i: %{http_code}\n" http://app.stable.example.com/sms/
 done
 ```
@@ -251,22 +251,22 @@ Expected output:
 Request 1: 200
 Request 2: 200
 ...
-Request 10: 200
-Request 11: 429
-Request 12: 429
+Request 100: 200
+Request 101: 429
+Request 102: 429
 ...
 ```
 
 # Test the user-specific limit 
 ```bash
-for i in {1..6}; do
+for i in {1..15}; do
   curl -s -o /dev/null \
     -H "x-user-id: user1" \
     -w "user1 Request $i: %{http_code}\n" \
     http://app.stable.example.com/sms/
 done
 
-for i in {1..6}; do
+for i in {1..15}; do
   curl -s -o /dev/null \
     -H "x-user-id: user2" \
     -w "user2 Request $i: %{http_code}\n" \
@@ -276,10 +276,10 @@ done
 
 Expected Output:
 
-- First 4 requests (user1) are allowed
-- Last 2 Requests (user1) are rejected
-- First 4 requests (user2) are allowed
-- Last 2 requests (user2) are rejected
+- First 10 requests (user1) are allowed
+- Last 5 Requests (user1) are rejected
+- First 10 requests (user2) are allowed
+- Last 5 requests (user2) are rejected
 
 
 ### If encountering issues
