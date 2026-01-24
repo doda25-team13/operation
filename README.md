@@ -124,26 +124,14 @@ You can then view the grafana UI on http://localhost:3000
 
 Grafana login requires credentials from the values.yaml: \
 username: admin \
-password: admin // or try prom-operator or admin123 
+password: admin123 // or try prom-operator or admin 
 
-For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self or viewing the http://app.stable.example.com/metrics
+To find our basic dashboard, go to Dashboards --> App Usability Metrics \
+To find our ab-testing dashboard, go to Dashboards --> Requests Comparison Dashboard \
+You can generate some traffic by manually sending some requests youself on the /sms page \
 
-To find our dashboard, go to Dashboards --> App Usability Metrics
-
-You can generate some traffic by opening another terminal and run this:
-```bash
-# Keep this running in a separate terminal window
-while true; do 
-  curl -s -o /dev/null http://app.stable.example.com/sms
-  echo "Request sent..."
-  sleep 1
-done
-```
 
 You should observe changes in the dashboard 
-
-### Known issues:
-Some warning / bugged output when installing the release with Helm  
 
 
 ## Test Email Alerts

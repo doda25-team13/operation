@@ -8,3 +8,5 @@ metadata:
 data:
   app-metrics.json: |
 {{ .Files.Get "dashboards/app-metrics.json" | indent 4 }}
+  requests-comparison.json: |
+{{ .Files.Get "dashboards/requests-comparison.json" | indent 4 }}
