@@ -202,3 +202,7 @@
 - Kevin
   - https://github.com/doda25-team13/operation/pull/43 AB testing dashboard, improved README
   - Reviewed PRs https://github.com/doda25-team13/operation/pull/44 https://github.com/doda25-team13/operation/pull/47 https://github.com/doda25-team13/operation/pull/39
+
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/46
+  - Worked on making sticky sessions work
