@@ -89,6 +89,15 @@ kube-prometheus-stack:
     adminUser: admin
     adminPassword: admin123
 
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
+      cleanupProxy:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
+
 versions:
   app:
     - name: v1
