@@ -167,6 +167,9 @@ minikube start --cpus=4 --memory=8192 --driver=docker
 # Install Istio 
 istioctl install
 kubectl label namespace default istio-injection=enabled --overwrite
+
+# To mount shared folder to minikube node
+minikube mount ./shared_data:/mnt/shared
  
 helm install app-stack ./app-stack
 
@@ -346,27 +349,36 @@ kubectl get pods
 kubectl get nodes
 ```
 
-### 7. Configure Local DNS Resolution
+### 7. Verification of Shared Storage
+To verify that the shared storage is working, we can read the file from the shared folder on the host from inside the running pod.
+```bash
+# Replace <pod-name> with your actual pod ID (e.g., app-service-v1-xyz)
+kubectl exec -it <pod-name> -- cat /mnt/shared/hello.txt
+```
+You can also write data from the application, and it will appear on your host machine.
+```bash
+kubectl exec -it <pod-name> -- sh -c "echo 'Hello from Container' >> /mnt/shared/logs.txt"
+cat shared_data/logs.txt
+```
+
+### 8. Configure Local DNS Resolution
 ```bash
 sudo sh -c 'echo "192.168.56.90 app.stable.example.com" >> /etc/hosts'
 ```
 
-### 8. Access Application
+### 9. Access Application
 Open the application in your browser: http://app.stable.example.com/sms/
 
-### 9. Configure Kubernetes Dashboard
+### 10. Configure Kubernetes Dashboard
 ```bash
 sudo sh -c 'echo "192.168.56.95 dashboard.stable.example.com" >> /etc/hosts'
 ```
 
-### 10. Access Dashboard
+### 11. Access Dashboard
 Open the dashboard in your browser: https://dashboard.stable.example.com/
 
-### 11. Login Into Dashboard
+### 12. Login Into Dashboard
 Generate admin token:
 ```bash
 kubectl -n kubernetes-dashboard create token admin-user
 ```
-Copy and paste the token to login.
-
-
