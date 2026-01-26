@@ -4,6 +4,8 @@ require 'fileutils'
 
 
 Vagrant.configure("2") do |config|
+  # Shared storage for all VMs
+  config.vm.synced_folder "./shared_data", "/mnt/shared"
 
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
@@ -61,7 +63,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-    config.trigger.after [:provision, :up] do |trigger|
+  config.trigger.after [:provision, :up] do |trigger|
     trigger.name = "Generate Inventory"
     trigger.ruby do |env, machine|
       dest = "inventory.cfg"
