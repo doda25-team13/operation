@@ -324,7 +324,7 @@ Run the Ansible playbook to install and configure:
 - Istio
 
 ```bash
-ansible-playbook -i inventory.cfg ./ansible/finalization.yaml 
+ansible-playbook -u vagrant -i 192.168.56.100, ./ansible/finalization.yaml
 ```
 
 ### 3. Update Helm Dependencies
