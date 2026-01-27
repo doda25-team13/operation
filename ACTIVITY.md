@@ -189,6 +189,8 @@
 ### Week Q2.9
 - Maria
   - https://github.com/doda25-team13/operation/pull/44
+  - https://github.com/doda25-team13/operation/pull/47
+  - Worked on the the documentation and improved the rate-limits
 
 - Vasil
   - https://github.com/doda25-team13/operation/pull/45
