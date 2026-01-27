@@ -15,19 +15,19 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "sms_requests_total",
+          "expr": "sum(sms_requests_total{pod=~\"app-v1-.*\"})",
           "legendFormat": "Total Requests",
           "refId": "A"
         }
       ]
     },
     {
-      "title": "Active Sessions (Last SMS Length)",
+      "title": "Last SMS Length",
       "type": "stat",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "last_sms_length_characters",
+          "expr": "last_sms_length_characters{pod=~\"app-v1-.*\"}",
           "legendFormat": "Characters",
           "refId": "B"
         }
@@ -48,7 +48,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(request_duration_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(request_duration_bucket{pod=~\"app-v1-.*\"}[5m])) by (le))",
           "legendFormat": "P95 Latency",
           "refId": "C"
         }
@@ -70,7 +70,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
-          "expr": "sum by (le)(rate(request_duration_bucket[1m]))",
+          "expr": "sum by (le)(rate(request_duration_bucket{pod=~\"app-v1-.*\"}[1m]))",
           "format": "heatmap",
           "refId": "D"
         }
@@ -88,7 +88,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
       "targets": [
         {
-          "expr": "sum(sms_length_bucket) by (le)",
+          "expr": "sum(sms_length_bucket{pod=~\"app-v1-.*\"}) by (le)",
           "format": "table",
           "instant": true,
           "legendFormat": "<{{le}}",
@@ -113,7 +113,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
       "targets": [
         {
-          "expr": "sum by (le)(rate(sms_length_bucket[1m]))",
+          "expr": "sum by (le)(rate(sms_length_bucket{pod=~\"app-v1-.*\"}[1m]))",
           "format": "heatmap",
           "refId": "F"
         }
@@ -132,7 +132,7 @@
       "gridPos": { "h": 4, "w": 6, "x": 0, "y": 24 },
       "targets": [
         {
-          "expr": "rate(sms_length_sum[5m]) / rate(sms_length_count[5m])",
+          "expr": "rate(sms_length_sum{pod=~\"app-v1-.*\"}[5m]) / rate(sms_length_count{pod=~\"app-v1-.*\"}[5m])",
           "legendFormat": "Avg Length",
           "refId": "G"
         }
@@ -154,7 +154,7 @@
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 24 },
       "targets": [
         {
-          "expr": "rate(request_duration_sum[5m]) / rate(request_duration_count[5m])",
+          "expr": "rate(request_duration_sum{pod=~\"app-v1-.*\"}[5m]) / rate(request_duration_count{pod=~\"app-v1-.*\"}[5m])",
           "legendFormat": "Avg Duration",
           "refId": "H"
         }

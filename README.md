@@ -59,7 +59,7 @@ ssh -i ~/.ssh/id_ed25519 vagrant@192.168.56.101
 
 ## Intial minikube setup
 ```bash
-minikube start --driver=docker # can be replaced with --driver=virtualbox if issues arise
+minikube start --driver=docker # can be replaced with --driver=virtualbox if issues arise, or try with flags  --cpus=4 --memory=8192
 
 # Make sure Ingress controller is enabled
 minikube addons enable ingress
@@ -126,7 +126,7 @@ Grafana login requires credentials from the values.yaml: \
 username: admin \
 password: admin123 // or try prom-operator or admin 
 
-To find our basic dashboard, go to Dashboards --> App Usability Metrics \
+To find our basic dashboard for all v1 metrics, go to Dashboards --> App Usability Metrics \
 To find our ab-testing dashboard, go to Dashboards --> Requests Comparison Dashboard \
 You can generate some traffic by manually sending some requests youself on the /sms page \
 
@@ -165,7 +165,7 @@ Start kubernetes cluster with minikube and install istio. Istio installation rec
 minikube start --cpus=4 --memory=8192 --driver=docker
 
 # Install Istio 
-istioctl install
+istioctl install # If istioctl is installed but can not be found: export PATH=$HOME/.istioctl/bin:$PATH and then try again
 kubectl label namespace default istio-injection=enabled --overwrite
 
 # To mount shared folder to minikube node
