@@ -1,3 +1,20 @@
+
+# SMS Spam Checker Application - Team 13
+
+This repository represents the center of our application. The repository includes everything required to run, deploy, and observe the application across multiple environments. Below you’ll find detailed instructions for running the application using different technologies and environments, along with troubleshooting tips and validation steps to ensure everything is working as expected.
+
+## Project Structure
+
+The application is made up from 4 repositories:
+
+| Repository  | Description |
+|---------|-----|
+| [`app`](https://github.com/doda25-team13/app) | Spring Boot–based web application serving the HTML/JS frontend and acting as the API gateway.  |
+| [`model-service`](https://github.com/doda25-team13/model-service)   | Backend ML service exposing a REST API for SMS spam classification.  |
+| [`lib-version`](https://github.com/doda25-team13/lib-version) | Shared library containing versioned dependencies used across services.|
+| [`operation`](https://github.com/doda25-team13/operation) | Infrastructure and deployment artifacts. | 
+
+
 # Running the Application with Docker Compose
 This project includes a `docker-compose.yml` file which runs both services:
 - **app** (frontend service)
