@@ -9,6 +9,9 @@
     venv_path: /home/vagrant/ansible_venv
     istio_version: "1.25.2"
 
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
   pre_tasks:
     - name: Install system packages for venv + pip + istio deps
       ansible.builtin.apt:
@@ -19,7 +22,6 @@
           - curl
           - tar
         state: present
-        update_cache: yes
 
     - name: Create virtualenv for Ansible Kubernetes modules
       ansible.builtin.command: python3 -m venv {{ venv_path }}

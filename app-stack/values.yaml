@@ -41,6 +41,11 @@ secret:
   smtpPass: "placeholder-password"
 
 kube-prometheus-stack:
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
   prometheus:
     prometheusSpec:
       serviceMonitorSelectorNilUsesHelmValues: false

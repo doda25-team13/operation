@@ -363,7 +363,7 @@ cat shared_data/logs.txt
 
 ### 8. Configure Local DNS Resolution
 ```bash
-sudo sh -c 'echo "192.168.56.90 app.stable.example.com" >> /etc/hosts'
+sudo sh -c 'echo "192.168.56.95 app.stable.example.com" >> /etc/hosts'
 ```
 
 ### 9. Access Application
