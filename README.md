@@ -59,7 +59,7 @@ ssh -i ~/.ssh/id_ed25519 vagrant@192.168.56.101
 
 ## Intial minikube setup
 ```bash
-minikube start --driver=docker # can be replaced with --driver=virtualbox if issues arise
+minikube start --driver=docker # can be replaced with --driver=virtualbox if issues arise, or try with flags  --cpus=4 --memory=8192
 
 # Make sure Ingress controller is enabled
 minikube addons enable ingress
@@ -124,26 +124,14 @@ You can then view the grafana UI on http://localhost:3000
 
 Grafana login requires credentials from the values.yaml: \
 username: admin \
-password: admin // or try prom-operator or admin123 
+password: admin123 // or try prom-operator or admin 
 
-For the prometheus, check under Status --> Target to verify that the correct endpoints are being scraped, alternatively you can verify by querying you self or viewing the http://app.stable.example.com/metrics
+To find our basic dashboard for all v1 metrics, go to Dashboards --> App Usability Metrics \
+To find our ab-testing dashboard, go to Dashboards --> Requests Comparison Dashboard \
+You can generate some traffic by manually sending some requests youself on the /sms page \
 
-To find our dashboard, go to Dashboards --> App Usability Metrics
-
-You can generate some traffic by opening another terminal and run this:
-```bash
-# Keep this running in a separate terminal window
-while true; do 
-  curl -s -o /dev/null http://app.stable.example.com/sms
-  echo "Request sent..."
-  sleep 1
-done
-```
 
 You should observe changes in the dashboard 
-
-### Known issues:
-Some warning / bugged output when installing the release with Helm  
 
 
 ## Test Email Alerts
@@ -166,13 +154,22 @@ Also check if you spelled your credentials correctly.
 
 ## Traffic Management (A4)
 
-Start kubernetes cluster with minikube and install instio. Istio installation recommends 4 CPU cores.
+### Prerequisites
+- Kubernetes cluster
+- Istio installed
+- kubectl and curl installed
+- Helm
+
+Start kubernetes cluster with minikube and install istio. Istio installation recommends 4 CPU cores.
 ```bash
 minikube start --cpus=4 --memory=8192 --driver=docker
 
 # Install Istio 
-istioctl install
+istioctl install # If istioctl is installed but can not be found: export PATH=$HOME/.istioctl/bin:$PATH and then try again
 kubectl label namespace default istio-injection=enabled --overwrite
+
+# To mount shared folder to minikube node
+minikube mount ./shared_data:/mnt/shared
  
 helm install app-stack ./app-stack
 
@@ -183,32 +180,47 @@ kubectl apply -f <path to istio>/samples/addons/kiali.yaml
 # Verify pods are up 
 kubectl get pods
 ```
-All pods should show 2/2 (application container + Istio sidecar proxy).
-
 ---
+To test canary split run the shell script that spins up a container that curls the app 100 times to check the canary split.
+```bash
+bash test-scripts/test-canary-split.sh
+```
+OR to manually test the canary split:
+
 Run `minikube tunnel` following the [update](#local-ip-setup-) to `/etc/hosts` (which you should've done for previous steps)
 You can find the app running on Go to http://app.stable.example.com/sms
 
-
-
 We simulated testing by simulating traffic on the browser and verifying the routing on the Kiali dahsboard which can be started by running `istioctl dashboard kiali`
 
+Sticky sessions are enabled by default, so the same user will always be routed to the same pod. This is implemented by setting cookies on the first request and using them on subsequent requests.
 
+To test sticky sessions, run the following shell script which curls the app after setting cookies on the first request.
+```bash
+bash test-scripts/test-sticky.sh
+```
+Expected output:
+```
+pod/sticky-test created
+pod/sticky-test condition met
+  21 v2
+pod "sticky-test" deleted from default namespace
+```
+**1st request**: went to v1 (or v2)  
+**subsequent 20 requests**: go to the same version
 ## Istio Rate Limiting Demo
 
 The following commands show how to deploy Redis + Envoy Ratelimit and test global rate limiting using Istio ingressgateway. 
 
 Note: The limit only applies to the `/sms/` path, as to not create issues with other components of the application.
 
-### Prerequisites
-
-- Kubernetes cluster
-- Istio installed
-- kubectl and curl installed
-- Helm
-
 ### Testing Rate Limiting
 
+To test the global limit, run the following shell script which curls the app 20 times:
+```bash
+bash test-scripts/test-global-rate-limit.sh
+```
+
+Or to test manually:
 ```bash
 # Follow steps from previous section ## Traffic Management
 
@@ -219,7 +231,7 @@ minikube tunnel
 
 
 # Test the global limit 
-for i in {1..15}; do
+for i in {1..110}; do
   curl -s -o /dev/null -w "Request $i: %{http_code}\n" http://app.stable.example.com/sms/
 done
 ```
@@ -230,22 +242,22 @@ Expected output:
 Request 1: 200
 Request 2: 200
 ...
-Request 10: 200
-Request 11: 429
-Request 12: 429
+Request 100: 200
+Request 101: 429
+Request 102: 429
 ...
 ```
 
 # Test the user-specific limit 
 ```bash
-for i in {1..6}; do
+for i in {1..15}; do
   curl -s -o /dev/null \
     -H "x-user-id: user1" \
     -w "user1 Request $i: %{http_code}\n" \
     http://app.stable.example.com/sms/
 done
 
-for i in {1..6}; do
+for i in {1..15}; do
   curl -s -o /dev/null \
     -H "x-user-id: user2" \
     -w "user2 Request $i: %{http_code}\n" \
@@ -255,10 +267,10 @@ done
 
 Expected Output:
 
-- First 4 requests (user1) are allowed
-- Last 2 Requests (user1) are rejected
-- First 4 requests (user2) are allowed
-- Last 2 requests (user2) are rejected
+- First 10 requests (user1) are allowed
+- Last 5 Requests (user1) are rejected
+- First 10 requests (user2) are allowed
+- Last 5 requests (user2) are rejected
 
 
 ### If encountering issues
@@ -281,4 +293,92 @@ Get the `:80` port, append it to curl address. For example:
 for i in {1..15}; do
   curl -i http://app.stable.example.com:30971/sms/
 done
+```
+
+# Running on Own Kubernetes Cluster
+
+This section describes how to provision the cluster, deploy the application stack, and access the application using the Istio ingress gateway.
+
+## Prerequisites
+- Vagrant
+- Ansible
+- Helm
+- kubectl
+- VirtualBox (or compatible provider)
+
+---
+
+### 1. Start the Virtual Machines
+
+```bash
+vagrant up
+```
+
+### 2. Finalize Cluster Setup with Ansible
+
+Run the Ansible playbook to install and configure:
+
+- Kubernetes
+- MetalLB
+- ingress-nginx
+- Istio
+
+```bash
+ansible-playbook -i inventory.cfg ./ansible/finalization.yaml 
+```
+
+### 3. Update Helm Dependencies
+
+```bash
+helm dependency update ./app-stack 
+```
+
+### 4. Configure kubectl Access
+```bash
+export KUBECONFIG=$PWD/kubeconfig 
+```
+
+### 5. Deploy the Application Stack
+```bash
+helm upgrade --install app-stack ./app-stack
+```
+
+### 6. Verify Cluster Access
+```bash
+kubectl get pods
+kubectl get nodes
+```
+
+### 7. Verification of Shared Storage
+To verify that the shared storage is working, we can read the file from the shared folder on the host from inside the running pod.
+```bash
+# Replace <pod-name> with your actual pod ID (e.g., app-service-v1-xyz)
+kubectl exec -it <pod-name> -- cat /mnt/shared/hello.txt
+```
+You can also write data from the application, and it will appear on your host machine.
+```bash
+kubectl exec -it <pod-name> -- sh -c "echo 'Hello from Container' >> /mnt/shared/logs.txt"
+cat shared_data/logs.txt
+```
+
+### 8. Configure Local DNS Resolution
+```bash
+sudo sh -c 'echo "192.168.56.90 app.stable.example.com" >> /etc/hosts'
+```
+
+### 9. Access Application
+Open the application in your browser: http://app.stable.example.com/sms/
+
+### 10. Configure Kubernetes Dashboard
+```bash
+sudo sh -c 'echo "192.168.56.95 dashboard.stable.example.com" >> /etc/hosts'
+```
+
+### 11. Access Dashboard
+Open the dashboard in your browser: https://dashboard.stable.example.com/
+
+### 12. Login Into Dashboard
+Generate admin token:
+```bash
+kubectl -n kubernetes-dashboard create token admin-user
 ```

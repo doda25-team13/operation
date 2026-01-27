@@ -1,144 +1,349 @@
 ---
-- hosts: ctrl
-  become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    kubeconfig_path: /home/vagrant/.kube/config
+- name: Finalization (MetalLB + ingress-nginx + Istio)
+  hosts: controller
+  become: true
+  gather_facts: true
 
-  tasks: 
-    
-    # step 20
-    - name: Check if running on single node cluster
-      shell: |
-        kubectl get nodes --kubeconfig={{ kubeconfig_path }} --no-headers | wc -l
-      register: node_count
+  vars:
+    kubeconfig_path: /etc/kubernetes/admin.conf
+    venv_path: /home/vagrant/ansible_venv
+    istio_version: "1.25.2"
+
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
+  pre_tasks:
+    - name: Install system packages for venv + pip + istio deps
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-venv
+          - python3-pip
+          - curl
+          - tar
+        state: present
+        update_cache: yes
+
+    - name: Create virtualenv for Ansible Kubernetes modules
+      ansible.builtin.command: python3 -m venv {{ venv_path }}
+      args:
+        creates: "{{ venv_path }}/bin/python"
+
+    - name: Install Kubernetes Python deps into venv (PEP 668 safe)
+      ansible.builtin.pip:
+        name:
+          - kubernetes
+          - PyYAML
+          - jsonpatch
+        virtualenv: "{{ venv_path }}"
+        virtualenv_command: "python3 -m venv"
+
+    - name: Use venv python for subsequent tasks
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "{{ venv_path }}/bin/python"
+
+    - name: Verify kubernetes python client import works
+      ansible.builtin.command: "{{ ansible_python_interpreter }} -c 'import kubernetes; print(kubernetes.__version__)'"
       changed_when: false
 
-    - name: Remove control-plane taint to allow scheduling on control-plane node
-      shell: |
+  tasks:
+
+    # Step 20
+    - name: Check number of nodes (single node cluster?)
+      ansible.builtin.command: >
+        kubectl get nodes --kubeconfig={{ kubeconfig_path }} --no-headers
+      register: nodes_list
+      changed_when: false
+
+    - name: Remove control-plane taint (only on single-node cluster)
+      ansible.builtin.command: >
         kubectl taint nodes --all node-role.kubernetes.io/control-plane- --kubeconfig={{ kubeconfig_path }}
-      when: node_count.stdout | int == 1
+      when: (nodes_list.stdout_lines | length) == 1
       register: taint_removal
       failed_when: false
-      changed_when: "'untainted' in taint_removal.stdout or 'not found' not in taint_removal.stderr"
+      changed_when: "'untainted' in (taint_removal.stdout | lower)"
 
     - name: Copy MetalLB manifest to VM
-      copy:
+      ansible.builtin.copy:
         src: "{{ playbook_dir }}/metallb/metallb-native.yaml"
         dest: /tmp/metallb-native.yaml
-        mode: '0644'
-    
-    
-    - name: Apply metallb manifest
+        mode: "0644"
+
+    - name: Apply MetalLB manifest
       kubernetes.core.k8s:
         state: present
         src: /tmp/metallb-native.yaml
         kubeconfig: "{{ kubeconfig_path }}"
 
     - name: Wait for MetalLB controller deployment to be available
-      shell: |
-        kubectl wait --for=condition=available \
-          deployment/controller \
-          -n metallb-system \
-          --timeout=180s \
-          --kubeconfig={{ kubeconfig_path }}
-      register: controller_deployment_wait
+      ansible.builtin.command: >
+        kubectl wait --for=condition=available deployment/controller
+        -n metallb-system --timeout=180s --kubeconfig={{ kubeconfig_path }}
+      register: metallb_controller_available
       changed_when: false
       retries: 3
       delay: 10
-      until: controller_deployment_wait.rc == 0
+      until: metallb_controller_available.rc == 0
 
-    - name: Wait for MetalLB speaker daemonset
-      shell: |
-        kubectl rollout status daemonset/speaker \
-          -n metallb-system \
-          --timeout=180s \
-          --kubeconfig={{ kubeconfig_path }}
-      register: speaker_wait
+    - name: Wait for MetalLB speaker daemonset rollout
+      ansible.builtin.command: >
+        kubectl rollout status daemonset/speaker
+        -n metallb-system --timeout=180s --kubeconfig={{ kubeconfig_path }}
+      register: metallb_speaker_rollout
       changed_when: false
+      retries: 3
+      delay: 10
+      until: metallb_speaker_rollout.rc == 0
 
-    - name: Wait for MetalLB controller pod to be ready
-      shell: |
-        kubectl wait -n metallb-system \
-          -l app=metallb,component=controller \
-          --for=condition=ready pod \
-          --timeout=120s \
-          --kubeconfig={{ kubeconfig_path }}
-      register: metallb_controller_wait
+    - name: Wait for MetalLB webhook service endpoints (if present)
+      ansible.builtin.shell: |
+        set -e
+        if kubectl get svc -n metallb-system metallb-webhook-service --kubeconfig={{ kubeconfig_path }} >/dev/null 2>&1; then
+          kubectl wait -n metallb-system --for=jsonpath='{.subsets[0].addresses[0].ip}'=*
+            endpoints/metallb-webhook-service --timeout=120s --kubeconfig={{ kubeconfig_path }}
+        else
+          echo "metallb-webhook-service not found; skipping endpoints wait"
+        fi
+      args:
+        executable: /bin/bash
+      register: metallb_webhook_wait
       changed_when: false
+      failed_when: false
 
-    - name: Give webhook service time to register with API server
-      pause:
-        seconds: 20
-
-    - name: Move IPAddressPool to VM
-      copy:
+    - name: Copy MetalLB IPAddressPool to VM
+      ansible.builtin.copy:
         src: "{{ playbook_dir }}/metallb/ip-pool.yaml"
         dest: /tmp/ip-pool.yaml
-        mode: '0644'
-    
-    - name: Create metallb IPAddressPool
+        mode: "0644"
+
+    - name: Apply MetalLB IPAddressPool
       kubernetes.core.k8s:
         state: present
         src: /tmp/ip-pool.yaml
         kubeconfig: "{{ kubeconfig_path }}"
 
-    - name: Move L2Advertisement to VM
-      copy:
+    - name: Copy MetalLB L2Advertisement to VM
+      ansible.builtin.copy:
         src: "{{ playbook_dir }}/metallb/l2-advertisement.yaml"
         dest: /tmp/l2-advertisement.yaml
-        mode: '0644'
-    
-    - name: Create metallb L2Advertisement
+        mode: "0644"
+
+    - name: Apply MetalLB L2Advertisement
       kubernetes.core.k8s:
         state: present
         src: /tmp/l2-advertisement.yaml
         kubeconfig: "{{ kubeconfig_path }}"
 
-    # step 21
+    # Step 21
     - name: Add ingress-nginx helm repo
       kubernetes.core.helm_repository:
         name: ingress-nginx
         repo_url: https://kubernetes.github.io/ingress-nginx
-    
-    - name: Copy values.yaml  to VM
-      copy:
+
+    - name: Copy ingress-nginx values.yaml to VM
+      ansible.builtin.copy:
         src: "{{ playbook_dir }}/ingress-nginx/values.yaml"
-        dest: /tmp/values.yaml
-        mode: '0644'
-    
-    - name: Install ingress-nginx chart using helm
+        dest: /tmp/ingress-values.yaml
+        mode: "0644"
+
+    - name: Create namespace for Ingress controller (for secrets)
+      ansible.builtin.shell: |
+        kubectl create namespace ingress-nginx --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Copy cert and key files to VM
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/certs/{{ item }}"
+        dest: "/tmp/{{ item }}"
+        mode: "0644"
+      with_items:
+        - tls.crt
+        - tls.key
+
+    - name: Create TLS secret for Ingress controller
+      ansible.builtin.shell: |
+        kubectl create secret tls self-signed-certificate-tls \
+        --key=/tmp/tls.key \
+        --cert=/tmp/tls.crt \
+        -n ingress-nginx \
+        --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Install/upgrade ingress-nginx via Helm
       kubernetes.core.helm:
         name: ingress-nginx
         chart_ref: ingress-nginx/ingress-nginx
         release_namespace: ingress-nginx
+        create_namespace: false
+        values:
+          controller:
+            ingressClassResource:
+              name: nginx
+              enabled: true
+              default: true
+            service:
+              loadBalancerIP: "192.168.56.95"
+            extraArgs:
+              default-ssl-certificate: "ingress-nginx/self-signed-certificate-tls"
+
+    - name: Wait for ingress-nginx controller deployment rollout
+      ansible.builtin.command: >
+        kubectl rollout status deployment/ingress-nginx-controller
+        -n ingress-nginx --timeout=180s --kubeconfig={{ kubeconfig_path }}
+      register: ingress_rollout
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: ingress_rollout.rc == 0
+
+    - name: Wait for ingress-nginx controller deployment to be available
+      ansible.builtin.command: >
+        kubectl wait --for=condition=available deployment/ingress-nginx-controller
+        -n ingress-nginx --timeout=180s --kubeconfig={{ kubeconfig_path }}
+      register: ingress_available
+      changed_when: false
+
+    # Step 22
+    - name: Add kubernetes-dashboard helm repo
+      kubernetes.core.helm_repository:
+        name: kubernetes-dashboard
+        repo_url: https://kubernetes.github.io/dashboard/
+
+    - name: Install/upgrade Kubernetes Dashboard via Helm
+      kubernetes.core.helm:
+        name: kubernetes-dashboard
+        chart_ref: kubernetes-dashboard/kubernetes-dashboard
+        release_namespace: kubernetes-dashboard
         create_namespace: true
-        values_files:
-          - /tmp/values.yaml
         state: present
         kubeconfig: "{{ kubeconfig_path }}"
+        values:
+          fullnameOverride: kubernetes-dashboard
 
-    - name: Wait for ingress controller deployment to be ready
-      shell: |
-        kubectl rollout status deployment/ingress-nginx-controller \
-          -n ingress-nginx \
-          --timeout=180s \
-          --kubeconfig={{ kubeconfig_path }}
+    - name: Wait for Kubernetes Dashboard pods to be ready
+      ansible.builtin.command: >
+        kubectl -n kubernetes-dashboard wait --for=condition=ready pod
+        -l app.kubernetes.io/instance=kubernetes-dashboard --timeout=300s
+        --kubeconfig={{ kubeconfig_path }}
+      register: dashboard_wait
       changed_when: false
-      register: ingress_rollout
-
-    - name: Verify ingress controller pod is ready
-      shell: |
-        kubectl get pods -n ingress-nginx \
-          -l app.kubernetes.io/component=controller \
-          -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' \
-          --kubeconfig={{ kubeconfig_path }}
-      register: ingress_ready_status
-      changed_when: false
-      retries: 5
+      retries: 3
       delay: 10
-      until: ingress_ready_status.stdout == "True"
+      until: dashboard_wait.rc == 0
+      failed_when: false
 
-    - name: Display ingress controller status
-      debug:
-        msg: "Ingress controller is ready and running"
+    - name: Copy Dashboard admin-user
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/dashboard/admin-user.yaml"
+        dest: /tmp/dashboard-admin-user.yaml
+        mode: "0644"
+
+    - name: Copy Dashboard ingress
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/dashboard/ingress.yaml"
+        dest: /tmp/dashboard-ingress.yaml
+        mode: "0644"
+
+    - name: Apply Dashboard admin-user
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        src: /tmp/dashboard-admin-user.yaml
+
+    - name: Apply Dashboard ingress
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        src: /tmp/dashboard-ingress.yaml
+
+    # Step 23
+    - name: Create Istio working directory
+      ansible.builtin.file:
+        path: /home/vagrant/istio
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
+
+    - name: Download Istio (amd64)
+      ansible.builtin.get_url:
+        url: "https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux-amd64.tar.gz"
+        dest: "/home/vagrant/istio/istio-{{ istio_version }}-linux-amd64.tar.gz"
+        owner: vagrant
+        group: vagrant
+        mode: "0644"
+      when: ansible_facts['architecture'] in ["x86_64", "amd64"]
+
+    - name: Download Istio (arm64)
+      ansible.builtin.get_url:
+        url: "https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux-arm64.tar.gz"
+        dest: "/home/vagrant/istio/istio-{{ istio_version }}-linux-arm64.tar.gz"
+        owner: vagrant
+        group: vagrant
+        mode: "0644"
+      when: ansible_facts['architecture'] in ["aarch64", "arm64"]
+
+    - name: Extract istioctl (amd64)
+      ansible.builtin.unarchive:
+        src: "/home/vagrant/istio/istio-{{ istio_version }}-linux-amd64.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        extra_opts:
+          - --strip-components=2
+          - "istio-{{ istio_version }}/bin/istioctl"
+      when: ansible_facts['architecture'] in ["x86_64", "amd64"]
+
+    - name: Extract istioctl (arm64)
+      ansible.builtin.unarchive:
+        src: "/home/vagrant/istio/istio-{{ istio_version }}-linux-arm64.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        extra_opts:
+          - --strip-components=2
+          - "istio-{{ istio_version }}/bin/istioctl"
+      when: ansible_facts['architecture'] in ["aarch64", "arm64"]
+
+    - name: Ensure istioctl is executable
+      ansible.builtin.file:
+        path: /usr/local/bin/istioctl
+        state: file
+        mode: "0755"
+
+    - name: Check if istiod deployment exists
+      ansible.builtin.command: >
+        kubectl get deployment istiod -n istio-system --kubeconfig={{ kubeconfig_path }}
+      register: istiod_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install Istio (default profile)
+      ansible.builtin.command: >
+        istioctl install -y
+      when: istiod_check.rc != 0
+
+    - name: Wait for Istio control plane to be ready
+      ansible.builtin.command: >
+        kubectl -n istio-system wait --for=condition=available deployment/istiod
+        --timeout=300s --kubeconfig={{ kubeconfig_path }}
+      register: istio_wait
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: istio_wait.rc == 0
+
+    - name: Wait for external IP of istio-ingressgateway (if installed)
+      ansible.builtin.shell: |
+        set -e
+        if kubectl -n istio-system get svc istio-ingressgateway --kubeconfig={{ kubeconfig_path }} >/dev/null 2>&1; then
+          kubectl -n istio-system get svc istio-ingressgateway \
+            -o jsonpath='{.status.loadBalancer.ingress[0].ip}' \
+            --kubeconfig={{ kubeconfig_path }}
+        else
+          echo ""
+        fi
+      args:
+        executable: /bin/bash
+      register: istio_ip
+      retries: 20
+      delay: 10
+      until: istio_ip.stdout != ""
+      changed_when: false
+      failed_when: false

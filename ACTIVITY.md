@@ -88,13 +88,12 @@
 
 - Kevin
   - https://github.com/doda25-team13/operation/pull/25
-  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late. 
+  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late. I also reviewed other's PR including https://github.com/doda25-team13/operation/pull/23 and https://github.com/doda25-team13/operation/pull/27 
 
 - Vasil
   - https://github.com/doda25-team13/operation/pull/27
   - I worked on the prometheus setup for week 4, however due to tasks from the previous assignment taking longer and still trowing errors I could not merge my assignment 3 tasks by friday week 3.
-  Worked on the grafana dashboard to display the exposed metric in real time. This was largely dependant on other people's work so I started pretty late.
-  I also reviewed other's PR including https://github.com/doda25-team13/operation/pull/23 and https://github.com/doda25-team13/operation/pull/27
+  
 
 - Vasil
   - https://github.com/doda25-team13/operation/pull/26
@@ -190,3 +189,27 @@
 ### Week Q2.9
 - Maria
   - https://github.com/doda25-team13/operation/pull/44
+  - https://github.com/doda25-team13/operation/pull/47
+  - Worked on the the documentation and improved the rate-limits
+
+- Vasil
+  - https://github.com/doda25-team13/operation/pull/45
+  - Enxtended and improved the deployment documentation and the deployment diagram
+
+- Leonidas
+  - https://github.com/doda25-team13/operation/pull/48
+  - https://github.com/doda25-team13/app/pull/12
+  - Worked on running the application on our own cluster. In addition changed pom.xml of app, to use a stable version of lib-version.
+ 
+- Kevin
+  - https://github.com/doda25-team13/operation/pull/43 AB testing dashboard, improved README
+  - Reviewed PRs https://github.com/doda25-team13/operation/pull/44 https://github.com/doda25-team13/operation/pull/47 https://github.com/doda25-team13/operation/pull/39
+
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/46
+  - Worked on making sticky sessions work
+
+### Week Q2.10
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/49
+  - Worked on shared mounts and tls certs

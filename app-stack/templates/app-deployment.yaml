@@ -33,5 +33,13 @@ spec:
               value: "http://{{ $.Values.model.name }}:{{ $.Values.model.port }}"
           resources:
             {{- toYaml $.Values.app.resources | nindent 12 }}
+          volumeMounts:
+            - name: shared-storage
+              mountPath: /mnt/shared
+      volumes:
+        - name: shared-storage
+          hostPath:
+            path: /mnt/shared
+            type: DirectoryOrCreate
 {{- end }}
 

@@ -1,0 +1,181 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "refresh": "5s",
+  "panels": [
+    {
+      "title": "Total Requests Comparison",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(sms_requests_total{pod=~\"app-v2-.*\"})",
+          "legendFormat": "v2 count",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(sms_requests_total{pod=~\"app-v1-.*\"})",
+          "legendFormat": "v1 count",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never"
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "title": "v2 Requests Total",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 9 },
+      "targets": [
+        {
+          "expr": "sum(sms_requests_total{pod=~\"app-v2-.*\"})",
+          "legendFormat": "v2 Requests",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "textMode": "value_and_name",
+        "colorMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 50, "color": "yellow" },
+              { "value": 100, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "v1 Requests Total",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 9 },
+      "targets": [
+        {
+          "expr": "sum(sms_requests_total{pod=~\"app-v1-.*\"})",
+          "legendFormat": "v1 Requests",
+          "refId": "B"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "textMode": "value_and_name",
+        "colorMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 50, "color": "yellow" },
+              { "value": 100, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Request Rate Comparison (per minute)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 15 },
+      "targets": [
+        {
+          "expr": "sum(rate(sms_requests_total{pod=~\"app-v2-.*\"}[1m])) * 60",
+          "legendFormat": "v2 Requests/min",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(sms_requests_total{pod=~\"app-v1-.*\"}[1m])) * 60",
+          "legendFormat": "v1 Requests/min",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "showPoints": "auto"
+          },
+          "unit": "reqpm",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    }
+  ],
+  "schemaVersion": 21,
+  "style": "dark",
+  "tags": ["requests-comparison", "metrics"],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Requests Comparison Dashboard",
+  "uid": "requests-comparison-v1",
+  "version": 2
+}
