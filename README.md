@@ -324,7 +324,7 @@ Run the Ansible playbook to install and configure:
 - Istio
 
 ```bash
-ansible-playbook -i inventory.cfg ./ansible/finalization.yaml 
+ansible-playbook -u vagrant -i 192.168.56.100, ./ansible/finalization.yaml
 ```
 
 ### 3. Update Helm Dependencies
@@ -363,7 +363,7 @@ cat shared_data/logs.txt
 
 ### 8. Configure Local DNS Resolution
 ```bash
-sudo sh -c 'echo "192.168.56.90 app.stable.example.com" >> /etc/hosts'
+sudo sh -c 'echo "192.168.56.95 app.stable.example.com" >> /etc/hosts'
 ```
 
 ### 9. Access Application
