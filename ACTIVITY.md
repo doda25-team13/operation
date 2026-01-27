@@ -208,3 +208,8 @@
 - Pranav
   - https://github.com/doda25-team13/operation/pull/46
   - Worked on making sticky sessions work
+
+### Week Q2.10
+- Pranav
+  - https://github.com/doda25-team13/operation/pull/49
+  - Worked on shared mounts and tls certs
