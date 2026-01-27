@@ -111,24 +111,43 @@
         name: ingress-nginx
         repo_url: https://kubernetes.github.io/ingress-nginx
 
-    - name: Copy ingress-nginx values.yaml to VM
+    - name: Create namespace for Ingress controller (for secrets)
+      ansible.builtin.shell: |
+        kubectl create namespace ingress-nginx --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Copy cert and key files to VM
       ansible.builtin.copy:
-        src: "{{ playbook_dir }}/ingress-nginx/values.yaml"
-        dest: /tmp/ingress-values.yaml
+        src: "{{ playbook_dir }}/certs/{{ item }}"
+        dest: "/tmp/{{ item }}"
         mode: "0644"
+      with_items:
+        - tls.crt
+        - tls.key
+
+    - name: Create TLS secret for Ingress controller
+      ansible.builtin.shell: |
+        kubectl create secret tls self-signed-certificate-tls \
+        --key=/tmp/tls.key \
+        --cert=/tmp/tls.crt \
+        -n ingress-nginx \
+        --dry-run=client -o yaml | kubectl apply -f -
 
     - name: Install/upgrade ingress-nginx via Helm
       kubernetes.core.helm:
         name: ingress-nginx
         chart_ref: ingress-nginx/ingress-nginx
         release_namespace: ingress-nginx
-        create_namespace: true
-        values_files:
-          - /tmp/ingress-values.yaml
-        state: present
-        kubeconfig: "{{ kubeconfig_path }}"
-        wait: true
-        wait_timeout: 300s
+        create_namespace: false
+        values:
+          controller:
+            ingressClassResource:
+              name: nginx
+              enabled: true
+              default: true
+            service:
+              loadBalancerIP: "192.168.56.95"
+            extraArgs:
+              default-ssl-certificate: "ingress-nginx/self-signed-certificate-tls"
 
     - name: Wait for ingress-nginx controller rollout
       ansible.builtin.command: >
